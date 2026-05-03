@@ -5,12 +5,13 @@ import {
   ChevronRight,
   GraduationCap,
   Home,
+  Info,
   Trash2,
   Palette,
   X,
   Save,
 } from 'lucide-react'
-import { COURSES, MANDATORY } from './courseData.js'
+import { COURSES, MANDATORY, CURRICULUM_DOC_NOTICE } from './courseData.js'
 
 const CAREER_CHIPS = [
   { id: 'all', label: '전체' },
@@ -196,6 +197,12 @@ export default function App() {
             <p className="mt-2 text-slate-600">
               학년·학기별 선택 제한을 반영한 연습용 플래너입니다.
             </p>
+            <p className="mx-auto mt-3 max-w-xl text-center text-xs leading-relaxed text-slate-500">
+              {CURRICULUM_DOC_NOTICE.revisionLabel}
+              <span className="mt-1 block">
+                목록은 선택과목 체크리스트(Ver 5.28) 개설분과 편성표(0423)·안내문을 함께 참고해 두었습니다.
+              </span>
+            </p>
           </div>
           <div className="flex flex-col gap-4">
             <button
@@ -205,7 +212,9 @@ export default function App() {
             >
               <div>
                 <p className="text-lg font-semibold text-slate-900">현 1학년 전용</p>
-                <p className="mt-1 text-sm text-slate-500">2, 3학년 과목 설계 · 2-1 ~ 3-2 탭</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  2·3학년 선택 과목 설계 · 2-1 ~ 3-2 탭 (2학년 24학점·3학년 2학기 21학점 등 안내문과 동일 규칙)
+                </p>
               </div>
               <ChevronRight className="h-6 w-6 text-indigo-500 transition group-hover:translate-x-0.5" />
             </button>
@@ -216,13 +225,15 @@ export default function App() {
             >
               <div>
                 <p className="text-lg font-semibold text-slate-900">현 2학년 전용</p>
-                <p className="mt-1 text-sm text-slate-500">3학년 과목 설계 · 3-1 · 3-2 탭</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  3학년 과목 설계 · 3-1 · 3-2 탭 (3-2는 3학점군 최대 3과목)
+                </p>
               </div>
               <ChevronRight className="h-6 w-6 text-indigo-500 transition group-hover:translate-x-0.5" />
             </button>
           </div>
           <p className="mt-10 text-center text-xs text-slate-400">
-            선택과목 목록은 학교 배부 체크리스트(Ver 5.28) 기준이며, 연도·개설에 따라 달라질 수 있습니다.
+            자료: 과목 선택 안내문·1학년 교육과정편성표(2026.4.23) 및 선택과목 체크리스트. 저작권은 사상고등학교에 있습니다.
           </p>
         </div>
       </div>
@@ -291,14 +302,18 @@ export default function App() {
               {mode === 'grade1' ? '현 1학년 · 이후 학년 설계' : '현 2학년 · 3학년 설계'} ·{' '}
               <span className="font-medium text-indigo-700">{TAB_LABELS[activeTab]}</span>
               <span className="mt-1 block text-[11px] text-slate-400">
-                개설 목록: 2025학년도 신입생 선택과목 체크리스트(Ver 5.28) 기준
+                개설 목록: 체크리스트(Ver 5.28) + 2025·2026학년도 편성표·안내문(0423) 반영. 동일 과목명이라도 학년도별 운영이 다를 수 있습니다.
               </span>
             </p>
 
             <div className="space-y-8">
               {artCourses.length > 0 ? (
                 <section>
-                  <SectionHeader emoji="🎨" title="예술 선택 (택1)" subtitle="학기당 예술 1과목 (2학년만)" />
+                  <SectionHeader
+                    emoji="🎨"
+                    title="예술 선택 (택1)"
+                    subtitle="2학년 학기당 1과목 · 편성표(0423)에는 반별 교차 이수 등 별도 규정이 있을 수 있음"
+                  />
                   <div className="grid gap-3 sm:grid-cols-2">
                     {artCourses.map((course) => {
                       const inCart = cart.some((c) => c.id === course.id)
@@ -423,6 +438,22 @@ export default function App() {
 
         <aside className="w-full flex-[0_0_100%] lg:flex-[0_0_30%] lg:max-w-[30%]">
           <div className="sticky top-[4.25rem] space-y-4">
+            <details className="group rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 shadow-sm open:bg-indigo-50">
+              <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold text-indigo-900 marker:hidden [&::-webkit-details-marker]:hidden">
+                <Info className="h-4 w-4 shrink-0 text-indigo-600" />
+                교육과정 요약 (편성표·안내문)
+                <span className="ml-auto text-xs font-normal text-indigo-600/90">펼치기</span>
+              </summary>
+              <ul className="mt-3 space-y-2 border-t border-indigo-100/80 pt-3 text-[11px] leading-relaxed text-slate-700">
+                {CURRICULUM_DOC_NOTICE.bullets.map((line, idx) => (
+                  <li key={idx} className="flex gap-2">
+                    <span className="text-indigo-500">·</span>
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+            </details>
+
             <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <h2 className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-900">
                 <Palette className="h-4 w-4 text-indigo-600" />

@@ -1,8 +1,18 @@
 /**
- * 개설 과목·시기: 「2025학년도 신입생 선택과목 체크리스트」Ver 5.28 — 체크리스트 시트
- * 학점: 동 파일 「과목」시트·2026학년도 교육과정 편성표(hwpx) 기준
+ * 개설 과목·시기: 「선택과목 체크리스트」(Ver 5.28) 체크리스트 시트 + 교과 편성 「2025·2026학년도 1학년 교육과정편성표(0423)」·「과목 선택 안내문」과 정합
  * type: 'art' | 4 | 3
  */
+export const CURRICULUM_DOC_NOTICE = {
+  revisionLabel: '자료 기준: 교육과정 편성표·안내문 (2026.4.23 배포본)',
+  bullets: [
+    '교과 이수 174학점 + 창의적 체험활동 18학점 = 192학점. 사상고 졸업 인정은 학교자율적 교육과정 주간 등을 포함해 195학점 안내됨.',
+    '국어·수학·영어 교과 합계는 최대 81학점까지(안내문·편성표 참고과목 상 한도).',
+    '2학년 각 학기: 4학점 선택군 3과목 + 3학점 선택군 4과목(합 24학점).',
+    '3학년 1학기: 동일 24학점 / 2학기: 4학점 3과목 + 3학점 3과목(합 21학점).',
+    '실제 개설·반 편성·예술·제2외국어 교차 이수는 학년도별 편성표 및 교과위 결정에 따름.',
+  ],
+}
+
 export const COURSES = [
   // 2-1
   { id: '21-4-01', grade: 2, sem: 1, type: 4, name: '문학', credits: 4, rec: ['human', 'all'] },
@@ -37,6 +47,7 @@ export const COURSES = [
   { id: '21-3-24', grade: 2, sem: 1, type: 3, name: '일본어', credits: 3, rec: ['human', 'all'] },
   { id: '21-3-25', grade: 2, sem: 1, type: 3, name: '색채 일반', credits: 3, rec: ['human', 'all'] },
   { id: '21-3-26', grade: 2, sem: 1, type: 3, name: '한문', credits: 3, rec: ['human', 'all'] },
+  { id: '21-3-27', grade: 2, sem: 1, type: 3, name: '스포츠 개론', credits: 3, rec: ['all'] },
   { id: '21-a-1', grade: 2, sem: 1, type: 'art', name: '음악 감상과 비평', credits: 3, rec: ['all'] },
   { id: '21-a-2', grade: 2, sem: 1, type: 'art', name: '미술 감상과 비평', credits: 3, rec: ['all'] },
 
@@ -105,6 +116,9 @@ export const COURSES = [
   { id: '22-3-48', grade: 2, sem: 2, type: 3, name: '물질과 에너지', credits: 3, rec: ['engineering', 'medical', 'all'] },
   { id: '22-3-49', grade: 2, sem: 2, type: 3, name: '음악 콘텐츠 제작 기초', credits: 3, rec: ['human', 'engineering', 'all'] },
   { id: '22-3-50', grade: 2, sem: 2, type: 3, name: '시각 디자인', credits: 3, rec: ['human', 'engineering', 'all'] },
+  { id: '22-3-51', grade: 2, sem: 2, type: 3, name: '실용 통계', credits: 3, rec: ['engineering', 'business', 'all'] },
+  { id: '22-3-52', grade: 2, sem: 2, type: 3, name: '스포츠 교육', credits: 3, rec: ['all'] },
+  { id: '22-3-53', grade: 2, sem: 2, type: 3, name: '스포츠 개론', credits: 3, rec: ['all'] },
   { id: '22-a-1', grade: 2, sem: 2, type: 'art', name: '음악 연주와 창작', credits: 3, rec: ['all'] },
   { id: '22-a-2', grade: 2, sem: 2, type: 'art', name: '미술 창작', credits: 3, rec: ['all'] },
 
@@ -168,6 +182,8 @@ export const COURSES = [
   { id: '31-3-37', grade: 3, sem: 1, type: 3, name: '한문 고전 읽기', credits: 3, rec: ['human', 'all'] },
   { id: '31-3-38', grade: 3, sem: 1, type: 3, name: '여행지리', credits: 3, rec: ['human', 'all'] },
   { id: '31-3-39', grade: 3, sem: 1, type: 3, name: '언어생활과 한자', credits: 3, rec: ['human', 'all'] },
+  { id: '31-3-40', grade: 3, sem: 1, type: 3, name: '스포츠 개론', credits: 3, rec: ['all'] },
+  { id: '31-3-41', grade: 3, sem: 1, type: 3, name: '스포츠 교육', credits: 3, rec: ['all'] },
 
   // 3-2
   { id: '32-4-01', grade: 3, sem: 2, type: 4, name: '독서 토론과 글쓰기', credits: 4, rec: ['human', 'all'] },
