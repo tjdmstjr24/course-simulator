@@ -1,5 +1,5 @@
-# main 브랜치에 푸시하면 정적 사이트를 GitHub Pages에 배포합니다.
-# 저장소 Settings → Pages → Build and deployment → Source: "GitHub Actions" 로 설정하세요.
+# main 푸시 시 빌드 후 GitHub Pages에 배포합니다.
+# 저장소 Settings → Pages → Source: "GitHub Actions" 필수입니다.
 name: Deploy GitHub Pages
 
 on:
@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -42,4 +42,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
