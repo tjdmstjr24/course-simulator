@@ -7,3 +7,25 @@ dist
 !.env.example
 _extract_curriculum.txt
 _parsed_checklist.txt
+_cur2025_hwpx/
+_notice2025_hwpx/
+
+# 로컬에서만 쓰는 편성표 덤프·zip (2025 참고용 TSV/플레인은 스크립트로 포함)
+_cur2026.zip
+_curriculum2026.zip
+_notice2026.zip
+_cur2026_hwpx/
+_curriculum2026_unzipped/
+_notice2026_unzipped/
+_b3b.tsv
+_baseline3.tsv
+_cur_prv.txt
+_cur_section0_plain.txt
+_cur_all_courses.tsv
+_curriculum_courses_extract.tsv
+_curriculum_missing_in_data.txt
+_cur2025_missing_in_data.txt
+_extract_notice2026.txt
+_g1_offerings.tsv
+_name_repr.txt
+scripts/__pycache__/

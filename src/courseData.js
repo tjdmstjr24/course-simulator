@@ -1,14 +1,14 @@
 /**
- * 개설 과목·시기: 「선택과목 체크리스트」(Ver 5.28) 체크리스트 시트 + 교과 편성 「2025·2026학년도 1학년 교육과정편성표(0423)」·「과목 선택 안내문」과 정합
+ * 개설 과목·시기: 「선택과목 체크리스트」(Ver 5.28) + 「2025학년도 1학년 교육과정편성표(0423)」학생자율 블록·「과목 선택 안내문(2025학년도 신입생)」과 정합
  * type: 'art' | 4 | 3
  */
 export const CURRICULUM_DOC_NOTICE = {
-  revisionLabel: '자료 기준: 교육과정 편성표·안내문 (2026.4.23 배포본)',
+  revisionLabel: '자료 기준: 교육과정 편성표·안내문 (2025학년도 신입생·0423 배포본)',
   bullets: [
+    '2025학년도 입학생(1학년)은 공통·학교지정 과목을 이수하고, 본 시뮬레이터에서는 2학년(2026)·3학년(2027)부터 선택 과목을 학기별로 설계합니다.',
     '교과 이수 174학점 + 창의적 체험활동 18학점 = 192학점. 사상고 졸업 인정은 학교자율적 교육과정 주간 등을 포함해 195학점 안내됨.',
     '국어·수학·영어 교과 합계는 최대 81학점까지(안내문·편성표 참고과목 상 한도).',
-    '2학년 각 학기: 4학점 선택군 3과목 + 3학점 선택군 4과목(합 24학점).',
-    '3학년 1학기: 동일 24학점 / 2학기: 4학점 3과목 + 3학점 3과목(합 21학점).',
+    '2학년 각 학기: 4학점 선택군 3과목 + 3학점 선택군 4과목(합 24학점). 3학년 1학기 동일 / 2학기는 3학점군 최대 3과목(합 21학점).',
     '실제 개설·반 편성·예술·제2외국어 교차 이수는 학년도별 편성표 및 교과위 결정에 따름.',
   ],
 }
@@ -47,7 +47,7 @@ export const COURSES = [
   { id: '21-3-24', grade: 2, sem: 1, type: 3, name: '일본어', credits: 3, rec: ['human', 'all'] },
   { id: '21-3-25', grade: 2, sem: 1, type: 3, name: '색채 일반', credits: 3, rec: ['human', 'all'] },
   { id: '21-3-26', grade: 2, sem: 1, type: 3, name: '한문', credits: 3, rec: ['human', 'all'] },
-  { id: '21-3-27', grade: 2, sem: 1, type: 3, name: '스포츠 개론', credits: 3, rec: ['all'] },
+  { id: '21-3-28', grade: 2, sem: 1, type: 3, name: '한국지리 탐구', credits: 3, rec: ['human', 'all'] },
   { id: '21-a-1', grade: 2, sem: 1, type: 'art', name: '음악 감상과 비평', credits: 3, rec: ['all'] },
   { id: '21-a-2', grade: 2, sem: 1, type: 'art', name: '미술 감상과 비평', credits: 3, rec: ['all'] },
 
@@ -62,7 +62,6 @@ export const COURSES = [
   { id: '22-4-08', grade: 2, sem: 2, type: 4, name: '수학과 문화', credits: 4, rec: ['human', 'all'] },
   { id: '22-4-09', grade: 2, sem: 2, type: 4, name: '영어 독해와 작문', credits: 4, rec: ['all'] },
   { id: '22-4-10', grade: 2, sem: 2, type: 4, name: '영어 발표와 토론', credits: 4, rec: ['all'] },
-  { id: '22-4-11', grade: 2, sem: 2, type: 4, name: '기초 체육 전공 실기', credits: 4, rec: ['all'] },
   { id: '22-4-12', grade: 2, sem: 2, type: 4, name: '영상 제작 기초', credits: 4, rec: ['engineering', 'human', 'all'] },
   { id: '22-4-13', grade: 2, sem: 2, type: 4, name: '기술·가정', credits: 4, rec: ['engineering', 'all'] },
   { id: '22-4-14', grade: 2, sem: 2, type: 4, name: '로봇과 공학세계', credits: 4, rec: ['engineering', 'all'] },
@@ -117,29 +116,18 @@ export const COURSES = [
   { id: '22-3-49', grade: 2, sem: 2, type: 3, name: '음악 콘텐츠 제작 기초', credits: 3, rec: ['human', 'engineering', 'all'] },
   { id: '22-3-50', grade: 2, sem: 2, type: 3, name: '시각 디자인', credits: 3, rec: ['human', 'engineering', 'all'] },
   { id: '22-3-51', grade: 2, sem: 2, type: 3, name: '실용 통계', credits: 3, rec: ['engineering', 'business', 'all'] },
-  { id: '22-3-52', grade: 2, sem: 2, type: 3, name: '스포츠 교육', credits: 3, rec: ['all'] },
-  { id: '22-3-53', grade: 2, sem: 2, type: 3, name: '스포츠 개론', credits: 3, rec: ['all'] },
+  { id: '22-3-54', grade: 2, sem: 2, type: 3, name: '기초 체육 전공 실기', credits: 3, rec: ['all'] },
   { id: '22-a-1', grade: 2, sem: 2, type: 'art', name: '음악 연주와 창작', credits: 3, rec: ['all'] },
   { id: '22-a-2', grade: 2, sem: 2, type: 'art', name: '미술 창작', credits: 3, rec: ['all'] },
 
-  // 3-1
-  { id: '31-4-01', grade: 3, sem: 1, type: 4, name: '화법과 언어', credits: 4, rec: ['human', 'all'] },
-  { id: '31-4-02', grade: 3, sem: 1, type: 4, name: '독서와 작문', credits: 4, rec: ['human', 'all'] },
-  { id: '31-4-03', grade: 3, sem: 1, type: 4, name: '미적분Ⅰ', credits: 4, rec: ['engineering', 'medical', 'all'] },
-  { id: '31-4-04', grade: 3, sem: 1, type: 4, name: '영어Ⅱ', credits: 4, rec: ['all'] },
+  // 3-1 — 4학점: 2학년 4학점 트랙과 동일 과목명은 제외(이미 2-1·2-2에서 이수·선택)
   { id: '31-4-05', grade: 3, sem: 1, type: 4, name: '수학과제 탐구', credits: 4, rec: ['engineering', 'all'] },
-  { id: '31-4-06', grade: 3, sem: 1, type: 4, name: '영어 독해와 작문', credits: 4, rec: ['all'] },
   { id: '31-4-07', grade: 3, sem: 1, type: 4, name: '직무 의사소통', credits: 4, rec: ['human', 'all'] },
-  { id: '31-4-08', grade: 3, sem: 1, type: 4, name: '영어 발표와 토론', credits: 4, rec: ['all'] },
-  { id: '31-4-09', grade: 3, sem: 1, type: 4, name: '독서 토론과 글쓰기', credits: 4, rec: ['human', 'all'] },
+  { id: '31-4-09', grade: 3, sem: 1, type: 4, name: '독서토론과 글쓰기', credits: 4, rec: ['human', 'all'] },
   { id: '31-4-10', grade: 3, sem: 1, type: 4, name: '심화 영어', credits: 4, rec: ['all'] },
   { id: '31-4-11', grade: 3, sem: 1, type: 4, name: '심화 영어 독해와 작문', credits: 4, rec: ['all'] },
   { id: '31-4-12', grade: 3, sem: 1, type: 4, name: '직무 영어', credits: 4, rec: ['all'] },
-  { id: '31-4-13', grade: 3, sem: 1, type: 4, name: '기초 체육 전공 실기', credits: 4, rec: ['all'] },
-  { id: '31-4-14', grade: 3, sem: 1, type: 4, name: '심화 체육 전공 실기', credits: 4, rec: ['all'] },
-  { id: '31-4-15', grade: 3, sem: 1, type: 4, name: '영상 제작 기초', credits: 4, rec: ['engineering', 'human', 'all'] },
   { id: '31-4-16', grade: 3, sem: 1, type: 4, name: '영화 콘텐츠 제작', credits: 4, rec: ['human', 'engineering', 'all'] },
-  { id: '31-4-17', grade: 3, sem: 1, type: 4, name: '로봇과 공학세계', credits: 4, rec: ['engineering', 'all'] },
   { id: '31-4-18', grade: 3, sem: 1, type: 4, name: '생활과학 탐구', credits: 4, rec: ['medical', 'engineering', 'all'] },
   { id: '31-4-19', grade: 3, sem: 1, type: 4, name: '음악 콘텐츠 제작', credits: 4, rec: ['human', 'all'] },
   { id: '31-4-20', grade: 3, sem: 1, type: 4, name: '아동발달과 부모', credits: 4, rec: ['human', 'medical', 'all'] },
@@ -155,7 +143,7 @@ export const COURSES = [
   { id: '31-3-10', grade: 3, sem: 1, type: 3, name: '인문학과 윤리', credits: 3, rec: ['human', 'all'] },
   { id: '31-3-11', grade: 3, sem: 1, type: 3, name: '화학 반응의 세계', credits: 3, rec: ['medical', 'engineering', 'all'] },
   { id: '31-3-12', grade: 3, sem: 1, type: 3, name: '미술 전공 실기', credits: 3, rec: ['human', 'all'] },
-  { id: '31-3-13', grade: 3, sem: 1, type: 3, name: '창의 공학 설계', credits: 3, rec: ['engineering', 'all'] },
+  { id: '31-3-13', grade: 3, sem: 1, type: 3, name: '창의공학설계', credits: 3, rec: ['engineering', 'all'] },
   { id: '31-3-14', grade: 3, sem: 1, type: 3, name: '삶과 종교', credits: 3, rec: ['human', 'all'] },
   { id: '31-3-15', grade: 3, sem: 1, type: 3, name: '직무 수학', credits: 3, rec: ['engineering', 'business', 'all'] },
   { id: '31-3-16', grade: 3, sem: 1, type: 3, name: '법과 사회', credits: 3, rec: ['human', 'business', 'all'] },
@@ -182,24 +170,20 @@ export const COURSES = [
   { id: '31-3-37', grade: 3, sem: 1, type: 3, name: '한문 고전 읽기', credits: 3, rec: ['human', 'all'] },
   { id: '31-3-38', grade: 3, sem: 1, type: 3, name: '여행지리', credits: 3, rec: ['human', 'all'] },
   { id: '31-3-39', grade: 3, sem: 1, type: 3, name: '언어생활과 한자', credits: 3, rec: ['human', 'all'] },
-  { id: '31-3-40', grade: 3, sem: 1, type: 3, name: '스포츠 개론', credits: 3, rec: ['all'] },
-  { id: '31-3-41', grade: 3, sem: 1, type: 3, name: '스포츠 교육', credits: 3, rec: ['all'] },
+  { id: '31-3-42', grade: 3, sem: 1, type: 3, name: '심화 체육 전공 실기', credits: 3, rec: ['all'] },
 
   // 3-2
-  { id: '32-4-01', grade: 3, sem: 2, type: 4, name: '독서 토론과 글쓰기', credits: 4, rec: ['human', 'all'] },
+  { id: '32-4-01', grade: 3, sem: 2, type: 4, name: '독서토론과 글쓰기', credits: 4, rec: ['human', 'all'] },
   { id: '32-4-02', grade: 3, sem: 2, type: 4, name: '전문 수학', credits: 4, rec: ['engineering', 'medical', 'all'] },
   { id: '32-4-03', grade: 3, sem: 2, type: 4, name: '심화 영어', credits: 4, rec: ['all'] },
   { id: '32-4-04', grade: 3, sem: 2, type: 4, name: '수학과제 탐구', credits: 4, rec: ['engineering', 'all'] },
   { id: '32-4-05', grade: 3, sem: 2, type: 4, name: '심화 영어 독해와 작문', credits: 4, rec: ['all'] },
   { id: '32-4-06', grade: 3, sem: 2, type: 4, name: '직무 영어', credits: 4, rec: ['all'] },
   { id: '32-4-07', grade: 3, sem: 2, type: 4, name: '실생활 영어 회화', credits: 4, rec: ['all'] },
-  { id: '32-4-08', grade: 3, sem: 2, type: 4, name: '심화 체육 전공 실기', credits: 4, rec: ['all'] },
   { id: '32-4-09', grade: 3, sem: 2, type: 4, name: '영화 콘텐츠 제작', credits: 4, rec: ['human', 'engineering', 'all'] },
   { id: '32-4-10', grade: 3, sem: 2, type: 4, name: '생활과학 탐구', credits: 4, rec: ['medical', 'engineering', 'all'] },
-  { id: '32-4-11', grade: 3, sem: 2, type: 4, name: '고급 체육 전공 실기', credits: 4, rec: ['all'] },
   { id: '32-4-12', grade: 3, sem: 2, type: 4, name: '음악 콘텐츠 제작', credits: 4, rec: ['human', 'all'] },
   { id: '32-4-13', grade: 3, sem: 2, type: 4, name: '아동발달과 부모', credits: 4, rec: ['human', 'medical', 'all'] },
-  { id: '32-4-14', grade: 3, sem: 2, type: 4, name: '스포츠 행정 및 경영', credits: 4, rec: ['business', 'all'] },
   { id: '32-4-15', grade: 3, sem: 2, type: 4, name: '광고 콘텐츠 제작', credits: 4, rec: ['human', 'business', 'all'] },
   { id: '32-4-16', grade: 3, sem: 2, type: 4, name: '중국 문화', credits: 4, rec: ['human', 'all'] },
   { id: '32-4-17', grade: 3, sem: 2, type: 4, name: '일본 문화', credits: 4, rec: ['human', 'all'] },
@@ -220,7 +204,7 @@ export const COURSES = [
   { id: '32-3-15', grade: 3, sem: 2, type: 3, name: '인간과 철학', credits: 3, rec: ['human', 'all'] },
   { id: '32-3-16', grade: 3, sem: 2, type: 3, name: '여행지리', credits: 3, rec: ['human', 'all'] },
   { id: '32-3-17', grade: 3, sem: 2, type: 3, name: '물리학 실험', credits: 3, rec: ['engineering', 'medical', 'all'] },
-  { id: '32-3-18', grade: 3, sem: 2, type: 3, name: '창의 공학 설계', credits: 3, rec: ['engineering', 'all'] },
+  { id: '32-3-18', grade: 3, sem: 2, type: 3, name: '창의공학설계', credits: 3, rec: ['engineering', 'all'] },
   { id: '32-3-19', grade: 3, sem: 2, type: 3, name: '인간과 심리', credits: 3, rec: ['medical', 'human', 'all'] },
   { id: '32-3-20', grade: 3, sem: 2, type: 3, name: '미디어와 사회', credits: 3, rec: ['human', 'all'] },
   { id: '32-3-21', grade: 3, sem: 2, type: 3, name: '화학 실험', credits: 3, rec: ['medical', 'engineering', 'all'] },
@@ -234,6 +218,9 @@ export const COURSES = [
   { id: '32-3-29', grade: 3, sem: 2, type: 3, name: '논술', credits: 3, rec: ['human', 'all'] },
   { id: '32-3-30', grade: 3, sem: 2, type: 3, name: '생태와 환경', credits: 3, rec: ['human', 'medical', 'all'] },
   { id: '32-3-31', grade: 3, sem: 2, type: 3, name: '논리와 사고', credits: 3, rec: ['human', 'engineering', 'all'] },
+  { id: '32-3-32', grade: 3, sem: 2, type: 3, name: '심화 체육 전공 실기', credits: 3, rec: ['all'] },
+  { id: '32-3-33', grade: 3, sem: 2, type: 3, name: '고급 체육 전공 실기', credits: 3, rec: ['all'] },
+  { id: '32-3-34', grade: 3, sem: 2, type: 3, name: '스포츠 행정 및 경영', credits: 3, rec: ['business', 'all'] },
 ]
 
 export const MANDATORY = {
