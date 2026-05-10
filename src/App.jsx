@@ -234,23 +234,26 @@ function sortCart(courses) {
 function SiteHeader({ view, onGuide, onSimHome }) {
   const simActive = view === 'home' || view === 'simulator'
   const base =
-    'rounded-lg px-3 py-2 text-xs font-medium transition sm:text-sm disabled:opacity-50'
-  const active = 'bg-indigo-100 text-indigo-800'
-  const idle = 'text-slate-600 hover:bg-slate-100'
+    'rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-300 ease-in-out sm:text-sm disabled:opacity-50'
+  const active = 'bg-indigo-600 text-white shadow-md shadow-indigo-500/25'
+  const idle =
+    'text-slate-500 hover:bg-slate-100/80 hover:text-slate-800 hover:shadow-sm'
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-slate-100/80 bg-white/90 shadow-sm shadow-slate-200/40 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
         <button
           type="button"
           onClick={onGuide}
-          className="flex min-w-0 items-center gap-2 text-left transition hover:opacity-90"
+          className="flex min-w-0 items-center gap-3 text-left transition-all duration-300 ease-in-out hover:opacity-90"
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-white">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-lg">
             <GraduationCap className="h-5 w-5" strokeWidth={1.75} />
           </div>
-          <span className="truncate text-sm font-bold text-slate-900 sm:text-base">사상고 고교학점제 가이드</span>
+          <span className="truncate text-sm font-extrabold tracking-tight text-slate-900 sm:text-base">
+            사상고 고교학점제 가이드
+          </span>
         </button>
-        <nav className="flex shrink-0 items-center gap-1 sm:gap-2" aria-label="주요 메뉴">
+        <nav className="flex shrink-0 items-center gap-2 sm:gap-3" aria-label="주요 메뉴">
           <button
             type="button"
             onClick={onGuide}
@@ -273,85 +276,85 @@ function SiteHeader({ view, onGuide, onSimHome }) {
 
 function GuideView({ onStartSim }) {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
-      <p className="text-sm font-medium text-indigo-600">사상고등학교</p>
-      <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">고교학점제 안내</h1>
-      <p className="mt-3 text-sm leading-relaxed text-slate-600">
+    <main className="mx-auto max-w-3xl px-6 py-14 sm:px-8 sm:py-20">
+      <p className="text-sm font-semibold text-indigo-600">사상고등학교</p>
+      <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">고교학점제 안내</h1>
+      <p className="mt-5 text-base font-medium leading-relaxed text-slate-500">
         이 사이트는 고교학점제·선택 과목 구조를 빠르게 이해하고, 사상고 안내문·편성표에 맞춘{' '}
-        <strong className="font-semibold text-slate-800">연습용 수강 설계 시뮬레이터</strong>를 함께 제공합니다. 실제
+        <strong className="font-bold text-slate-800">연습용 수강 설계 시뮬레이터</strong>를 함께 제공합니다. 실제
         수강신청·반 편성은 학교 공지를 따릅니다.
       </p>
 
-      <section className="mt-10 space-y-3">
-        <h2 className="text-base font-bold text-slate-900">고교학점제를 한 줄로</h2>
-        <p className="text-sm leading-relaxed text-slate-600">
-          교과목은 <strong className="text-slate-800">필수 이수</strong>와 <strong className="text-slate-800">학생 선택</strong>이
-          어우러지고, 과목마다 <strong className="text-slate-800">학점</strong>이 붙습니다. 일정 학점을 채우면 해당
+      <section className="mt-14 space-y-4">
+        <h2 className="text-lg font-extrabold text-slate-900">고교학점제를 한 줄로</h2>
+        <p className="text-base font-medium leading-relaxed text-slate-500">
+          교과목은 <strong className="font-bold text-slate-800">필수 이수</strong>와 <strong className="font-bold text-slate-800">학생 선택</strong>이
+          어우러지고, 과목마다 <strong className="font-bold text-slate-800">학점</strong>이 붙습니다. 일정 학점을 채우면 해당
           과목을 이수한 것으로 인정됩니다. 창의적 체험활동 등 교과 밖 활동도 별도 기준으로 이수합니다.
         </p>
       </section>
 
-      <section className="mt-10 space-y-3">
-        <h2 className="text-base font-bold text-slate-900">졸업·학점(이 사이트 안내 기준)</h2>
-        <ul className="list-inside list-disc space-y-2 text-sm leading-relaxed text-slate-600">
+      <section className="mt-14 space-y-4">
+        <h2 className="text-lg font-extrabold text-slate-900">졸업·학점(이 사이트 안내 기준)</h2>
+        <ul className="list-inside list-disc space-y-3 text-base font-medium leading-relaxed text-slate-500">
           {CURRICULUM_DOC_NOTICE.bullets.slice(0, 4).map((line, idx) => (
             <li key={idx}>{line}</li>
           ))}
         </ul>
-        <p className="text-xs leading-relaxed text-slate-500">{CURRICULUM_DOC_NOTICE.revisionLabel}</p>
+        <p className="text-sm font-medium leading-relaxed text-slate-500">{CURRICULUM_DOC_NOTICE.revisionLabel}</p>
       </section>
 
-      <section className="mt-10 space-y-3">
-        <h2 className="text-base font-bold text-slate-900">시뮬레이터로 할 수 있는 것</h2>
-        <ul className="space-y-2 text-sm leading-relaxed text-slate-600">
+      <section className="mt-14 space-y-4">
+        <h2 className="text-lg font-extrabold text-slate-900">시뮬레이터로 할 수 있는 것</h2>
+        <ul className="space-y-3 text-base font-medium leading-relaxed text-slate-500">
           <li>
-            <span className="font-semibold text-slate-800">입학 연도별 모드</span> — 2026년도 입학생은 2학년 1학기부터
+            <span className="font-bold text-slate-800">입학 연도별 모드</span> — 2026년도 입학생은 2학년 1학기부터
             3학년 2학기까지, 2025년도 입학생은 3학년 두 학기만 연습할 수 있습니다.
           </li>
           <li>
-            <span className="font-semibold text-slate-800">학기·교과 분야</span> — 탭으로 학기를 바꾸고, 국어·수학·과학·
+            <span className="font-bold text-slate-800">학기·교과 분야</span> — 탭으로 학기를 바꾸고, 국어·수학·과학·
             정보 등 분야별로 편성된 선택 과목을 봅니다.
           </li>
           <li>
-            <span className="font-semibold text-slate-800">4학점 / 3학점 / 예술</span> — 학기당 4학점 선택군 최대 3과목,
+            <span className="font-bold text-slate-800">4학점 / 3학점 / 예술</span> — 학기당 4학점 선택군 최대 3과목,
             3학점 선택군은 3학년 2학기에 최대 3과목 등 안내문에 맞춘 상한을 적용했습니다. 예술은 학기당 1과목까지입니다.
           </li>
           <li>
-            <span className="font-semibold text-slate-800">파란 필수 표시</span> — 과목 선택 안내문의 필수 표기 과목은
+            <span className="font-bold text-slate-800">파란 필수 표시</span> — 과목 선택 안내문의 필수 표기 과목은
             기본 담김 처리되어 해제할 수 없습니다.
           </li>
           <li>
-            <span className="font-semibold text-slate-800">계열 칩·추천</span> — 인문, 자연, 공학·정보 등 칩을 고르면
+            <span className="font-bold text-slate-800">계열 칩·추천</span> — 인문, 자연, 공학·정보 등 칩을 고르면
             그 흐름에 맞는 과목에 추천 표시가 납니다. 같은 과목명은 중복 이수할 수 없습니다.
           </li>
           <li>
-            <span className="font-semibold text-slate-800">선수 관계</span> — 대수·미적분 등 일부 과목은 이수 순서 안내가
+            <span className="font-bold text-slate-800">선수 관계</span> — 대수·미적분 등 일부 과목은 이수 순서 안내가
             있을 때 시뮬레이터에서 막거나 안내합니다.
           </li>
         </ul>
       </section>
 
-      <section className="mt-10 space-y-3">
-        <h2 className="text-base font-bold text-slate-900">과목 목록에 대해</h2>
-        <p className="text-sm leading-relaxed text-slate-600">
+      <section className="mt-14 space-y-4">
+        <h2 className="text-lg font-extrabold text-slate-900">과목 목록에 대해</h2>
+        <p className="text-base font-medium leading-relaxed text-slate-500">
           연도별 신입생 안내문과 교육과정 편성표를 참고해 2·3학년 선택 과목을 넣었습니다. 학년도마다 개설 과목·반이
           달라질 수 있으니, 최종은 담임·교과 담당 교사 안내를 확인하세요.
         </p>
       </section>
 
-      <div className="mt-12 flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="mt-16 flex flex-col gap-4 sm:flex-row sm:items-center">
         <button
           type="button"
           onClick={onStartSim}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-700"
+          className="inline-flex items-center justify-center gap-2 rounded-3xl bg-indigo-600 px-8 py-4 text-sm font-bold text-white shadow-lg shadow-indigo-500/30 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-500/35"
         >
           시뮬레이션 시작하기
           <ChevronRight className="h-4 w-4" />
         </button>
-        <p className="text-xs text-slate-500">입학 연도를 고른 뒤 학기별로 과목을 담아 보세요.</p>
+        <p className="text-sm font-medium text-slate-500">입학 연도를 고른 뒤 학기별로 과목을 담아 보세요.</p>
       </div>
 
-      <p className="mt-14 text-center text-xs text-slate-400">
+      <p className="mt-20 text-center text-sm font-medium text-slate-400">
         자료: 과목 선택 안내문·교육과정 편성표 등. 저작권은 사상고등학교에 있습니다.
       </p>
     </main>
@@ -360,15 +363,15 @@ function GuideView({ onStartSim }) {
 
 function SectionHeader({ icon: Icon, emoji, title, subtitle }) {
   return (
-    <div className="flex items-center gap-2 border-b border-slate-200 pb-2 mb-3">
+    <div className="mb-5 flex items-start gap-3 border-b border-slate-100 pb-4">
       {Icon ? (
-        <Icon className="h-5 w-5 text-indigo-600" strokeWidth={1.75} />
+        <Icon className="mt-0.5 h-5 w-5 shrink-0 text-indigo-600" strokeWidth={1.75} />
       ) : (
-        <span className="text-lg leading-none">{emoji}</span>
+        <span className="text-xl leading-none">{emoji}</span>
       )}
-      <div>
-        <h3 className="text-sm font-semibold text-slate-800">{title}</h3>
-        {subtitle ? <p className="text-xs text-slate-500">{subtitle}</p> : null}
+      <div className="min-w-0 flex-1">
+        <h3 className="text-base font-extrabold tracking-tight text-slate-900">{title}</h3>
+        {subtitle ? <p className="mt-1.5 text-sm font-medium leading-relaxed text-slate-500">{subtitle}</p> : null}
       </div>
     </div>
   )
@@ -391,22 +394,24 @@ function SimulatorDashboard({
   cartListMaxClass = 'max-h-56',
 }) {
   return (
-    <div className="space-y-4">
-      <details className="group rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 shadow-sm open:bg-indigo-50">
-        <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold text-indigo-900 marker:hidden [&::-webkit-details-marker]:hidden">
-          <Info className="h-4 w-4 shrink-0 text-indigo-600" />
+    <div className="space-y-6">
+      <details className="group rounded-3xl border border-slate-100 bg-white p-6 shadow-md shadow-slate-200/40 open:shadow-lg">
+        <summary className="flex cursor-pointer list-none items-center gap-3 text-sm font-extrabold text-slate-900 marker:hidden [&::-webkit-details-marker]:hidden">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+            <Info className="h-4 w-4" strokeWidth={2} />
+          </span>
           교육과정 요약 (편성표·안내문)
-          <span className="ml-auto text-xs font-normal text-indigo-600/90">펼치기</span>
+          <span className="ml-auto text-xs font-semibold text-indigo-600">펼치기</span>
         </summary>
-        <ul className="mt-3 space-y-2 border-t border-indigo-100/80 pt-3 text-[11px] leading-relaxed text-slate-700">
+        <ul className="mt-5 space-y-3 border-t border-slate-100 pt-5 text-xs font-medium leading-relaxed text-slate-500">
           {CURRICULUM_DOC_NOTICE.bullets.map((line, idx) => (
-            <li key={idx} className="flex gap-2">
-              <span className="text-indigo-500">·</span>
+            <li key={idx} className="flex gap-3">
+              <span className="shrink-0 font-bold text-indigo-500">·</span>
               <span>{line}</span>
             </li>
           ))}
-          <li className="flex gap-2">
-            <span className="text-indigo-500">·</span>
+          <li className="flex gap-3">
+            <span className="shrink-0 font-bold text-indigo-500">·</span>
             <span>
               동일 과목명 중복 이수 금지, 선수과목(req)은 위계 경고 후에도 담기를 선택할 수 있습니다.
             </span>
@@ -414,25 +419,29 @@ function SimulatorDashboard({
         </ul>
       </details>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-900">
-          <Palette className="h-4 w-4 text-indigo-600" />
+      <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-md shadow-slate-200/40">
+        <h2 className="mb-5 flex items-center gap-3 text-sm font-extrabold text-slate-900">
+          <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-indigo-50">
+            <Palette className="h-4 w-4 text-indigo-600" />
+          </span>
           학교 필수 과목
         </h2>
-        <div className="space-y-3">
+        <div className="space-y-5">
           {mandatoryKeys.map((key) => (
             <div key={key}>
-              <p className="mb-1 text-xs font-semibold text-indigo-700">{TAB_LABELS[key]}</p>
-              <ul className="space-y-1 rounded-lg bg-slate-50 p-2">
+              <p className="mb-2 text-xs font-bold text-indigo-600">{TAB_LABELS[key]}</p>
+              <ul className="space-y-2 rounded-2xl bg-slate-50/90 p-4">
                 {(MANDATORY[key] || []).map((m) => (
-                  <li key={m.name} className="flex justify-between text-xs text-slate-700">
-                    <span className="inline-flex items-center gap-1.5 font-medium text-slate-800">
-                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                  <li key={m.name} className="flex justify-between gap-3 text-xs">
+                    <span className="inline-flex min-w-0 items-center gap-2 font-semibold text-slate-800">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700">
                         <Check className="h-3 w-3" strokeWidth={3} />
                       </span>
-                      {m.name}
+                      <span className="truncate">{m.name}</span>
                     </span>
-                    <span className="text-slate-500">{m.credits > 0 ? `${m.credits}학점` : '편성표 참고'}</span>
+                    <span className="shrink-0 font-medium text-slate-500">
+                      {m.credits > 0 ? `${m.credits}학점` : '편성표 참고'}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -441,20 +450,20 @@ function SimulatorDashboard({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <h2 className="mb-3 text-sm font-bold text-slate-900">내가 담은 과목</h2>
+      <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-md shadow-slate-200/40">
+        <h2 className="mb-5 text-sm font-extrabold text-slate-900">내가 담은 과목</h2>
         {sortedCart.length === 0 ? (
-          <p className="text-xs text-slate-500">과목을 선택해 보세요.</p>
+          <p className="text-sm font-medium text-slate-500">과목을 선택해 보세요.</p>
         ) : (
-          <ul className={`space-y-2 overflow-y-auto pr-1 ${cartListMaxClass}`}>
+          <ul className={`space-y-3 overflow-y-auto pr-1 ${cartListMaxClass}`}>
             {sortedCart.map((c) => (
               <li
                 key={c.id}
-                className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50/80 px-2 py-2 text-xs"
+                className="flex items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/90 px-4 py-3 text-xs shadow-sm"
               >
                 <div className="min-w-0">
-                  <p className="truncate font-medium text-slate-800">{c.name}</p>
-                  <p className="text-slate-500">
+                  <p className="truncate font-bold text-slate-900">{c.name}</p>
+                  <p className="mt-0.5 font-medium text-slate-500">
                     {TAB_LABELS[tabKey(c)]} · {c.credits}학점
                   </p>
                 </div>
@@ -462,10 +471,10 @@ function SimulatorDashboard({
                   type="button"
                   onClick={() => removeFromCart(c.id)}
                   disabled={requiredCourseIdSet.has(c.id)}
-                  className={`rounded-md p-1.5 transition ${
+                  className={`rounded-xl p-2 transition-all duration-300 ease-in-out ${
                     requiredCourseIdSet.has(c.id)
                       ? 'cursor-not-allowed text-slate-300'
-                      : 'text-slate-400 hover:bg-red-50 hover:text-red-600'
+                      : 'text-slate-400 hover:bg-red-50 hover:text-red-600 hover:shadow-sm'
                   }`}
                   aria-label={`${c.name} 제거`}
                 >
@@ -477,24 +486,24 @@ function SimulatorDashboard({
         )}
       </div>
 
-      <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-600 to-indigo-700 p-4 text-white shadow-lg shadow-indigo-200">
-        <p className="text-xs font-medium text-indigo-100">선택 누적 학점</p>
-        <p className="mt-1 text-2xl font-bold tabular-nums">{totalCredits}</p>
-        <p className="mt-2 text-[11px] leading-relaxed text-indigo-100/90">
+      <div className="rounded-3xl border border-indigo-500/10 bg-gradient-to-br from-indigo-600 to-indigo-700 p-6 text-white shadow-xl shadow-indigo-500/25">
+        <p className="text-xs font-semibold tracking-wide text-indigo-100/90">선택 누적 학점</p>
+        <p className="mt-2 text-3xl font-extrabold tabular-nums tracking-tight">{totalCredits}</p>
+        <p className="mt-3 text-sm font-medium leading-relaxed text-indigo-100/90">
           필수 {mandatoryTotalCredits} + 선택 {selectedCredits}
         </p>
 
-        <div className="mt-4 rounded-xl bg-white/10 p-3 ring-1 ring-white/20">
-          <div className="flex items-center justify-between gap-2 text-[11px] font-semibold text-indigo-50">
+        <div className="mt-6 rounded-2xl bg-white/10 p-4 ring-1 ring-white/15">
+          <div className="flex items-center justify-between gap-2 text-xs font-bold text-white">
             <span>생활·교양 영역 필수 이수 현황</span>
-            <span className="tabular-nums text-white">
+            <span className="tabular-nums text-indigo-50">
               {liberalCredits}/{LIBERAL_CAP}학점
             </span>
           </div>
-          <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-indigo-900/40">
+          <div className="mt-3 h-3 overflow-hidden rounded-full bg-indigo-950/30">
             <div
-              className={`h-full rounded-full transition-all duration-300 ${
-                liberalDone ? 'bg-emerald-400' : 'bg-amber-400'
+              className={`h-full rounded-full transition-all duration-300 ease-out ${
+                liberalDone ? 'bg-emerald-400 shadow-sm shadow-emerald-500/40' : 'bg-indigo-300 shadow-sm shadow-indigo-300/50'
               }`}
               style={{ width: `${liberalPct}%` }}
               role="progressbar"
@@ -503,7 +512,7 @@ function SimulatorDashboard({
               aria-valuemax={100}
             />
           </div>
-          <p className="mt-1.5 text-[10px] leading-snug text-indigo-100/85">
+          <p className="mt-2 text-xs font-medium leading-snug text-indigo-100/80">
             기술·가정·정보·제2외국어·교양 등(isLiberal) 및 주제 탐구(R&E) 반영
           </p>
         </div>
@@ -511,7 +520,7 @@ function SimulatorDashboard({
         <button
           type="button"
           onClick={onSave}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white py-2.5 text-sm font-semibold text-indigo-700 shadow transition hover:bg-indigo-50"
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-white py-3.5 text-sm font-bold text-indigo-700 shadow-lg shadow-indigo-950/10 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-indigo-50 hover:shadow-xl"
         >
           <Save className="h-4 w-4" />
           최종 시간표 저장
@@ -692,7 +701,7 @@ export default function App() {
 
   if (view === 'guide') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/40 to-slate-100">
+      <div className="min-h-screen bg-slate-50">
         <SiteHeader view="guide" onGuide={goGuide} onSimHome={goSimHome} />
         <GuideView onStartSim={goSimHome} />
       </div>
@@ -701,36 +710,36 @@ export default function App() {
 
   if (view === 'home') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/40 to-slate-100">
+      <div className="min-h-screen bg-slate-50">
         <SiteHeader view="home" onGuide={goGuide} onSimHome={goSimHome} />
-        <div className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-3xl flex-col justify-center px-6 py-12">
-          <div className="mb-10 text-center">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">수강 설계 시뮬레이션</h1>
-            <p className="mt-2 text-slate-600">입학 연도를 선택한 뒤 학기별로 과목을 담아 보세요.</p>
+        <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-3xl flex-col justify-center px-8 py-16">
+          <div className="mb-12 text-center">
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">수강 설계 시뮬레이션</h1>
+            <p className="mt-4 text-base font-medium text-slate-500">입학 연도를 선택한 뒤 학기별로 과목을 담아 보세요.</p>
           </div>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-6">
             <button
               type="button"
               onClick={() => startSimulator('grade1')}
-              className="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
+              className="group flex items-center justify-between rounded-3xl border border-slate-100 bg-white p-8 text-left shadow-md shadow-slate-200/50 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-100/40"
             >
               <div>
-                <p className="text-lg font-semibold text-slate-900">2026년도 입학생</p>
+                <p className="text-lg font-extrabold text-slate-900">2026년도 입학생</p>
               </div>
-              <ChevronRight className="h-6 w-6 text-indigo-500 transition group-hover:translate-x-0.5" />
+              <ChevronRight className="h-6 w-6 text-indigo-500 transition-all duration-300 ease-in-out group-hover:translate-x-1" />
             </button>
             <button
               type="button"
               onClick={() => startSimulator('grade2')}
-              className="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
+              className="group flex items-center justify-between rounded-3xl border border-slate-100 bg-white p-8 text-left shadow-md shadow-slate-200/50 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-100/40"
             >
               <div>
-                <p className="text-lg font-semibold text-slate-900">2025년도 입학생</p>
+                <p className="text-lg font-extrabold text-slate-900">2025년도 입학생</p>
               </div>
-              <ChevronRight className="h-6 w-6 text-indigo-500 transition group-hover:translate-x-0.5" />
+              <ChevronRight className="h-6 w-6 text-indigo-500 transition-all duration-300 ease-in-out group-hover:translate-x-1" />
             </button>
           </div>
-          <p className="mt-10 text-center text-xs text-slate-400">
+          <p className="mt-14 text-center text-sm font-medium text-slate-400">
             자료: 과목 선택 안내문·교육과정 편성표 등. 저작권은 사상고등학교에 있습니다.
           </p>
         </div>
@@ -739,22 +748,22 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen bg-slate-50">
       <SiteHeader view="simulator" onGuide={goGuide} onSimHome={goSimHome} />
 
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 pb-28 pt-6 lg:flex-row lg:gap-6 lg:pb-6 sm:px-6">
+      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-5 pb-32 pt-8 lg:flex-row lg:gap-10 lg:pb-8 sm:px-8">
         <main className="w-full flex-[0_0_100%] lg:flex-[0_0_70%] lg:max-w-[70%]">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-            <div className="mb-4 flex flex-wrap gap-2">
+          <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-md shadow-slate-200/50 sm:p-8 lg:p-10">
+            <div className="mb-6 flex flex-wrap gap-3">
               {TRACK_CHIPS.map((chip) => (
                 <button
                   key={chip.id}
                   type="button"
                   onClick={() => setTrack(chip.id)}
-                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition sm:text-sm ${
+                  className={`rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-300 ease-in-out sm:text-sm ${
                     track === chip.id
-                      ? 'bg-indigo-600 text-white shadow shadow-indigo-200'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30 hover:-translate-y-0.5 hover:shadow-lg'
+                      : 'border border-transparent bg-slate-100/90 text-slate-500 shadow-sm hover:-translate-y-0.5 hover:border-slate-200 hover:bg-white hover:text-slate-800 hover:shadow-md'
                   }`}
                 >
                   {chip.label}
@@ -762,16 +771,16 @@ export default function App() {
               ))}
             </div>
 
-            <div className="mb-4 flex flex-wrap gap-1 border-b border-slate-100 pb-1">
+            <div className="mb-6 flex flex-wrap gap-2 border-b border-slate-100 pb-2">
               {tabs.map((tk) => (
                 <button
                   key={tk}
                   type="button"
                   onClick={() => setActiveTab(tk)}
-                  className={`rounded-t-lg px-3 py-2 text-xs font-semibold transition sm:text-sm ${
+                  className={`rounded-2xl px-4 py-3 text-xs font-bold transition-all duration-300 ease-in-out sm:text-sm ${
                     activeTab === tk
-                      ? 'bg-indigo-50 text-indigo-800 ring-1 ring-indigo-100'
-                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/25'
+                      : 'text-slate-500 hover:bg-slate-100/80 hover:text-slate-900'
                   }`}
                 >
                   {TAB_LABELS[tk]}
@@ -779,12 +788,12 @@ export default function App() {
               ))}
             </div>
 
-            <p className="mb-4 text-xs text-slate-500">
+            <p className="mb-8 text-sm font-medium text-slate-500">
               {mode === 'grade1' ? '2026년도 입학생' : '2025년도 입학생'} ·{' '}
-              <span className="font-medium text-indigo-700">{TAB_LABELS[activeTab]}</span>
+              <span className="font-bold text-indigo-600">{TAB_LABELS[activeTab]}</span>
             </p>
 
-            <div className="space-y-8">
+            <div className="space-y-12 sm:space-y-14">
               {coursesByArea.map(({ area, courses }) => (
                 <section key={area}>
                   <SectionHeader
@@ -792,7 +801,7 @@ export default function App() {
                     title={`${area} 분야`}
                     subtitle="계열 칩 선택 시, 이미 담았거나 담을 수 없는 과목·다른 학기에 두는 수능 궤적 과목은 추천이 뜨지 않습니다."
                   />
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid gap-5 sm:grid-cols-2 lg:gap-6">
                     {courses.map((course) => {
                       const inCart = cart.some((c) => c.id === course.id)
                       const isFixedRequired = requiredCourseIdSet.has(course.id)
@@ -818,49 +827,51 @@ export default function App() {
                           key={course.id}
                           type="button"
                           onClick={() => toggleCourse(course)}
-                          className={`relative flex flex-col rounded-xl border p-4 text-left transition duration-200 ${
+                          className={`relative flex flex-col rounded-3xl border p-5 text-left transition-all duration-300 ease-in-out sm:p-6 ${
                             isSelected
-                              ? 'border-indigo-500 bg-indigo-50/80 shadow-md ring-2 ring-indigo-200'
+                              ? 'border-indigo-200 bg-indigo-50/90 shadow-lg shadow-indigo-200/50 ring-2 ring-indigo-500/30 hover:-translate-y-1 hover:shadow-xl'
                               : isRecommended
-                                ? 'border-amber-300 bg-amber-50/80 shadow-sm ring-1 ring-amber-200 hover:-translate-y-0.5 hover:shadow-md'
-                                : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md'
+                                ? 'border-indigo-100 bg-indigo-50/50 shadow-md shadow-indigo-100/60 ring-1 ring-indigo-100 hover:-translate-y-1 hover:shadow-lg hover:ring-indigo-200'
+                                : 'border-slate-100 bg-white shadow-md shadow-slate-200/40 hover:-translate-y-1 hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-100/30'
                           }`}
                         >
-                          <div className="mb-2 flex items-center justify-between">
+                          <div className="mb-3 flex items-center justify-between gap-2">
                             <span
-                              className={`rounded-full px-2 py-1 text-[10px] font-semibold ${
+                              className={`rounded-full px-3 py-1 text-[10px] font-bold ${
                                 course.type === 'art'
-                                  ? 'bg-fuchsia-100 text-fuchsia-700'
+                                  ? 'bg-violet-100 text-violet-700'
                                   : course.type === 4
                                     ? 'bg-indigo-100 text-indigo-700'
-                                    : 'bg-emerald-100 text-emerald-700'
+                                    : 'bg-slate-100 text-slate-600'
                               }`}
                             >
                               {groupLabel}
                             </span>
                             {isFixedRequired ? (
-                              <span className="rounded-full bg-sky-200 px-2 py-1 text-[10px] font-bold text-sky-800">
+                              <span className="rounded-full bg-indigo-100 px-2.5 py-1 text-[10px] font-extrabold text-indigo-800">
                                 파란 필수
                               </span>
                             ) : isRecommended ? (
-                              <span className="rounded-full bg-amber-200 px-2 py-1 text-[10px] font-bold text-amber-800">
+                              <span className="rounded-full bg-indigo-600/10 px-2.5 py-1 text-[10px] font-extrabold text-indigo-700 ring-1 ring-indigo-200/60">
                                 추천
                               </span>
                             ) : null}
                           </div>
-                          <div className="flex items-start justify-between gap-2">
-                            <span className="font-medium text-slate-900">{course.name}</span>
+                          <div className="flex items-start justify-between gap-3">
+                            <span className="font-bold leading-snug text-slate-900">{course.name}</span>
                             <span
-                              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border ${
+                              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-300 ease-in-out ${
                                 isSelected
-                                  ? 'border-indigo-500 bg-indigo-600 text-white'
-                                  : 'border-slate-200 bg-slate-50 text-slate-400'
+                                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/40'
+                                  : 'border border-slate-200 bg-slate-50 text-slate-400'
                               }`}
                             >
                               <Check className="h-4 w-4" strokeWidth={2.5} />
                             </span>
                           </div>
-                          <span className="mt-2 text-xs text-slate-500">{course.credits}학점 · {course.id}</span>
+                          <span className="mt-3 text-xs font-medium text-slate-500">
+                            {course.credits}학점 · {course.id}
+                          </span>
                         </button>
                       )
                     })}
@@ -872,7 +883,7 @@ export default function App() {
         </main>
 
         <aside className="hidden w-full lg:block lg:flex-[0_0_30%] lg:max-w-[30%]">
-          <div className="sticky top-[4.25rem]">
+          <div className="sticky top-[5.25rem]">
             <SimulatorDashboard
               mandatoryKeys={mandatoryKeys}
               sortedCart={sortedCart}
@@ -891,18 +902,18 @@ export default function App() {
       </div>
 
       <div
-        className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between gap-3 border-t border-slate-200 bg-white px-4 py-3 shadow-[0_-4px_20px_rgba(15,23,42,0.08)] lg:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between gap-4 border-t border-slate-100 bg-white/95 px-5 py-4 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl lg:hidden"
         style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
       >
-        <p className="min-w-0 text-sm font-medium text-slate-800">
+        <p className="min-w-0 text-sm font-medium text-slate-500">
           현재 선택:{' '}
-          <span className="font-bold tabular-nums text-indigo-700">{totalCredits}</span>
+          <span className="font-extrabold tabular-nums text-indigo-600">{totalCredits}</span>
           학점
         </p>
         <button
           type="button"
           onClick={() => setCartSheetOpen(true)}
-          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+          className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/30 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-xl"
         >
           <ShoppingBag className="h-4 w-4" />
           장바구니 보기
@@ -918,14 +929,14 @@ export default function App() {
             onClick={() => setCartSheetOpen(false)}
           />
           <div
-            className="absolute bottom-0 left-0 right-0 max-h-[88vh] overflow-y-auto rounded-t-2xl border border-slate-200 bg-white px-4 pt-3 shadow-2xl"
+            className="absolute bottom-0 left-0 right-0 max-h-[88vh] overflow-y-auto rounded-t-3xl border border-slate-100 bg-white px-6 pt-5 shadow-2xl shadow-slate-300/50"
             style={{ paddingBottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}
             role="dialog"
             aria-modal="true"
             aria-labelledby="cart-sheet-title"
           >
-            <div className="mx-auto mb-3 h-1.5 w-12 shrink-0 rounded-full bg-slate-200" />
-            <h2 id="cart-sheet-title" className="mb-3 text-sm font-bold text-slate-900">
+            <div className="mx-auto mb-4 h-1.5 w-14 shrink-0 rounded-full bg-slate-200" />
+            <h2 id="cart-sheet-title" className="mb-5 text-base font-extrabold text-slate-900">
               장바구니
             </h2>
             <SimulatorDashboard
@@ -951,28 +962,28 @@ export default function App() {
 
       {modal ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-5 backdrop-blur-md"
           role="dialog"
           aria-modal="true"
         >
-          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
-            <div className="mb-3 flex items-start justify-between gap-3">
-              <h3 className="text-lg font-bold text-slate-900">알림</h3>
+          <div className="w-full max-w-md rounded-3xl border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-300/40">
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <h3 className="text-xl font-extrabold tracking-tight text-slate-900">알림</h3>
               <button
                 type="button"
                 onClick={() => setModal(null)}
-                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                className="rounded-2xl p-2 text-slate-400 transition-all duration-300 ease-in-out hover:bg-slate-100 hover:text-slate-700"
                 aria-label="닫기"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <p className="text-sm leading-relaxed text-slate-600">{modal.message}</p>
-            <div className="mt-6 flex justify-end">
+            <p className="text-base font-medium leading-relaxed text-slate-500">{modal.message}</p>
+            <div className="mt-8 flex justify-end">
               <button
                 type="button"
                 onClick={() => setModal(null)}
-                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700"
+                className="rounded-2xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-xl"
               >
                 확인
               </button>
@@ -983,24 +994,24 @@ export default function App() {
 
       {prereqModal ? (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/45 p-5 backdrop-blur-md"
           role="dialog"
           aria-modal="true"
           aria-labelledby="prereq-dialog-title"
         >
-          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
-            <h3 id="prereq-dialog-title" className="text-lg font-bold text-slate-900">
+          <div className="w-full max-w-md rounded-3xl border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-300/40">
+            <h3 id="prereq-dialog-title" className="text-xl font-extrabold tracking-tight text-slate-900">
               선수 과목 안내
             </h3>
-            <p className="mt-3 text-sm leading-relaxed text-slate-700">
+            <p className="mt-4 text-base font-medium leading-relaxed text-slate-500">
               앗! {prereqModal.course.name}을(를) 수강하려면 {prereqModal.missing.join(', ')}을(를) 먼저 듣는 것을 강력히 권장합니다.
               그래도 담으시겠습니까?
             </p>
-            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button
                 type="button"
                 onClick={() => setPrereqModal(null)}
-                className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
+                className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-md"
               >
                 취소하기
               </button>
@@ -1010,7 +1021,7 @@ export default function App() {
                   addCourseToCart(prereqModal.course)
                   setPrereqModal(null)
                 }}
-                className="rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-700"
+                className="rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-xl"
               >
                 그래도 담기
               </button>
