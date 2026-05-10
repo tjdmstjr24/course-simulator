@@ -1,16 +1,5 @@
 import { useMemo, useState, useEffect } from 'react'
-import {
-  BookOpen,
-  Check,
-  ChevronRight,
-  GraduationCap,
-  Home,
-  Info,
-  Trash2,
-  Palette,
-  X,
-  Save,
-} from 'lucide-react'
+import { Check, ChevronRight, GraduationCap, Info, Trash2, Palette, X, Save } from 'lucide-react'
 import { COURSES, MANDATORY, CURRICULUM_DOC_NOTICE } from './courseData.js'
 
 /** 안내문 「수능·탐구 이수 트랙」·계열별 권장 선택 흐름에 맞춘 추천 칩 */
@@ -35,10 +24,10 @@ const SUNUNG_PRIMARY_TAB = {
   문학: '2-1',
   '화법과 언어': '2-2',
   '독서와 작문': '3-1',
-  '독서토론과 글쓰기': '3-2',
+  '독서 토론과 글쓰기': '3-2',
   대수: '2-1',
   미적분Ⅰ: '2-2',
-  '수학과제 탐구': '3-1',
+  '수학 과제 탐구': '3-1',
   '전문 수학': '3-2',
   영어Ⅰ: '2-1',
   영어Ⅱ: '2-2',
@@ -46,15 +35,16 @@ const SUNUNG_PRIMARY_TAB = {
   '심화 영어': '3-2',
 }
 
-const SUNUNG_KOREAN = new Set(['문학', '화법과 언어', '독서와 작문', '독서토론과 글쓰기'])
-const SUNUNG_MATH = new Set(['대수', '미적분Ⅰ', '수학과제 탐구', '전문 수학'])
+const SUNUNG_KOREAN = new Set(['문학', '화법과 언어', '독서와 작문', '독서 토론과 글쓰기'])
+const SUNUNG_MATH = new Set(['대수', '미적분Ⅰ', '수학 과제 탐구', '전문 수학'])
 const SUNUNG_ENGLISH = new Set(['영어Ⅰ', '영어Ⅱ', '영어 독해와 작문', '심화 영어'])
 
 const BLUE_REQUIRED_BY_TAB = {
   '2-1': ['문학', '대수', '영어Ⅰ', '확률과 통계'],
   '2-2': ['화법과 언어', '미적분Ⅰ', '영어Ⅱ'],
-  '3-1': ['수학과제 탐구'],
-  '3-2': ['윤리문제 탐구', '과학의 역사와 문화'],
+  /** 안내문 표1 파란(필수): 3-1 국어만(영어는 선택), 3-2는 표2 내 3학점 필수 */
+  '3-1': ['독서와 작문'],
+  '3-2': ['윤리 문제 탐구', '과학의 역사와 문화'],
 }
 
 const AREA_ORDER = [
@@ -80,13 +70,17 @@ function courseTrackIds(course) {
   const n = course.name
   const ids = new Set()
   if (
-    /(문학|독서|화법|매체|국어|의사소통|토론|글쓰기|영상|언어생활|한문|철학|심리|종교|논술|윤리|사회|지리|세계사|정치|법과|경제|인문|역사|도시|동아시아|여행지리|사회문제|기후변화와 지속가능|한국지리)/.test(
+    /** '과학의 역사와 문화' 등은 역사 과목이 아님 — 인문·사회 칩에서 제외 */
+    !/과학의 역사/.test(n) &&
+    /(문학|독서|화법|매체|국어|의사소통|토론|글쓰기|영상|언어생활|한문|철학|심리|종교|논술|윤리|사회|지리|세계사|정치|법과|경제|인문|역사|도시|동아시아|여행지리|사회문제|기후변화와 지속가능|지속가능한 세계|한국지리)/.test(
       n,
     )
   ) {
     ids.add('track_kor_soc')
   }
   if (
+    /** '데이터/정보 …과학'은 정보 교과 명칭 — 탐구(STEM) 태그에서는 제외 */
+    !/(데이터 과학|정보 과학|정보과학)/.test(n) &&
     /(물리|화학|생명|지구|과학|역학|양자|유전|세포|에너지|천문|행성|실험|전자기|물질|지구시스템|행성우주|과학의 역사|기후변화와환경|화학 반응|생물의)/.test(
       n,
     )
@@ -94,14 +88,20 @@ function courseTrackIds(course) {
     ids.add('track_stem')
   }
   if (
-    /(대수|미적분|기하|확률|통계|수학|이산|경제 수학|수학과|인공지능 수학|직무 수학|전문 수학|실용 통계|수학과제)/.test(n)
+    /(대수|미적분|기하|확률|통계|수학|이산|경제 수학|수학과|인공지능 수학|직무 수학|전문 수학|실용 통계|수학 과제|수학과제)/.test(n)
   ) {
     ids.add('track_stem')
   }
   if (/(영어Ⅰ|영어Ⅱ|영어 독해|심화 영어|미디어 영어|세계 문화와 영어|실생활 영어|직무 영어)/.test(n)) {
     ids.add('track_stem')
   }
-  if (/(정보|인공지능|프로그래밍|데이터|공학|기술|가정|로봇|영상 제작|창의공학|창의 공학|정보과학)/.test(n)) {
+  if (
+    /(정보|인공지능|프로그래밍|데이터|공학|기술|가정|로봇|영상 제작|창의공학|창의 공학|정보과학|정보 과학|데이터 과학)/.test(n) ||
+    /** 공학·정보 진로 연계 탐색: 기초 수리·실험 과학까지 같은 칩에서 추천(2학년 1학기에 정보 단일 과목 보완) */
+    /(확률과 통계|물리학|화학|생명과학|지구과학|역학과 에너지|물질과 에너지|세포와 물질대사|지구과학Ⅰ|지구시스템과학|전자기와 양자|화학 반응의 세계|실험)/.test(
+      n,
+    )
+  ) {
     ids.add('track_eng')
   }
   if (/(보건|생명|세포|유전|의학|화학 반응|생물의|지구과학 실험|생명과학 실험)/.test(n)) {
@@ -151,16 +151,24 @@ function getAreaLabel(name) {
     (/국어/.test(name) && !/중국어|한국어/.test(name))
   if (isKoreanLangArea) return '국어'
   if (/(대수|미적분|기하|확률|수학|통계)/.test(name)) return '수학'
-  if (/(세계사|정치|법과|경제|윤리|사회|지리|한국지리|동아시아|인문학)/.test(name)) return '사회'
+  /** 과학 교과 선택·융합(이름 속 ‘역사’가 사회 키워드에 잡히는 것 방지) */
+  if (/과학의 역사/.test(name)) return '과학'
   if (
-    /(물리|화학|생명|지구|우주|역학|전자기|과학|세포|물질|에너지|대사|양자|유전|천문|행성|실험|지구시스템|행성우주|반응의 세계|생물의)/.test(
+    /(세계사|정치|법과|경제|윤리|사회|지리|한국지리|동아시아|인문학|사회문제|지속가능한 세계|역사|도시|여행지리|현대사회|현대 세계|현대세계)/.test(
+      name,
+    )
+  )
+    return '사회'
+  /** 정보/기술 브랜치를 과학 브랜치보다 위에 둠 — '데이터 과학'·'정보 과학'·'정보과학'이 '…과학' 패턴에 잡히지 않도록 */
+  if (/(정보|인공지능|데이터|프로그래밍|공학|기술·가정|정보과학|정보 과학|로봇|영상 제작|창의공학|창의 공학)/.test(name)) return '정보/기술'
+  if (
+    /(물리|화학|생명|지구|우주|역학|전자기|과학|세포|물질|에너지|대사|양자|유전|천문|행성|실험|지구시스템|행성우주|반응의 세계|생물의|기후변화와 환경)/.test(
       name,
     )
   )
     return '과학'
   if (/(체육|스포츠|운동)/.test(name)) return '체육'
   if (/(연극|미술|음악|시창|드로잉|조형|색채|디자인)/.test(name)) return '예술'
-  if (/(정보|인공지능|데이터|프로그래밍|공학|기술·가정|정보과학)/.test(name)) return '정보/기술'
   if (/(교육의 이해|진로와 직업|보건|생태와 환경|철학|심리|논술|경제활동|삶과 종교)/.test(name))
     return '교양'
   return '기타'
@@ -238,6 +246,133 @@ function sortCart(courses) {
   })
 }
 
+function SiteHeader({ view, onGuide, onSimHome }) {
+  const simActive = view === 'home' || view === 'simulator'
+  const base =
+    'rounded-lg px-3 py-2 text-xs font-medium transition sm:text-sm disabled:opacity-50'
+  const active = 'bg-indigo-100 text-indigo-800'
+  const idle = 'text-slate-600 hover:bg-slate-100'
+  return (
+    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+        <button
+          type="button"
+          onClick={onGuide}
+          className="flex min-w-0 items-center gap-2 text-left transition hover:opacity-90"
+        >
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-white">
+            <GraduationCap className="h-5 w-5" strokeWidth={1.75} />
+          </div>
+          <span className="truncate text-sm font-bold text-slate-900 sm:text-base">사상고 고교학점제 가이드</span>
+        </button>
+        <nav className="flex shrink-0 items-center gap-1 sm:gap-2" aria-label="주요 메뉴">
+          <button
+            type="button"
+            onClick={onGuide}
+            className={`${base} ${view === 'guide' ? active : idle}`}
+          >
+            가이드
+          </button>
+          <button
+            type="button"
+            onClick={onSimHome}
+            className={`${base} ${simActive ? active : idle}`}
+          >
+            시뮬레이션
+          </button>
+        </nav>
+      </div>
+    </header>
+  )
+}
+
+function GuideView({ onStartSim }) {
+  return (
+    <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
+      <p className="text-sm font-medium text-indigo-600">사상고등학교</p>
+      <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">고교학점제 안내</h1>
+      <p className="mt-3 text-sm leading-relaxed text-slate-600">
+        이 사이트는 고교학점제·선택 과목 구조를 빠르게 이해하고, 사상고 안내문·편성표에 맞춘{' '}
+        <strong className="font-semibold text-slate-800">연습용 수강 설계 시뮬레이터</strong>를 함께 제공합니다. 실제
+        수강신청·반 편성은 학교 공지를 따릅니다.
+      </p>
+
+      <section className="mt-10 space-y-3">
+        <h2 className="text-base font-bold text-slate-900">고교학점제를 한 줄로</h2>
+        <p className="text-sm leading-relaxed text-slate-600">
+          교과목은 <strong className="text-slate-800">필수 이수</strong>와 <strong className="text-slate-800">학생 선택</strong>이
+          어우러지고, 과목마다 <strong className="text-slate-800">학점</strong>이 붙습니다. 일정 학점을 채우면 해당
+          과목을 이수한 것으로 인정됩니다. 창의적 체험활동 등 교과 밖 활동도 별도 기준으로 이수합니다.
+        </p>
+      </section>
+
+      <section className="mt-10 space-y-3">
+        <h2 className="text-base font-bold text-slate-900">졸업·학점(이 사이트 안내 기준)</h2>
+        <ul className="list-inside list-disc space-y-2 text-sm leading-relaxed text-slate-600">
+          {CURRICULUM_DOC_NOTICE.bullets.slice(0, 4).map((line, idx) => (
+            <li key={idx}>{line}</li>
+          ))}
+        </ul>
+        <p className="text-xs leading-relaxed text-slate-500">{CURRICULUM_DOC_NOTICE.revisionLabel}</p>
+      </section>
+
+      <section className="mt-10 space-y-3">
+        <h2 className="text-base font-bold text-slate-900">시뮬레이터로 할 수 있는 것</h2>
+        <ul className="space-y-2 text-sm leading-relaxed text-slate-600">
+          <li>
+            <span className="font-semibold text-slate-800">입학 연도별 모드</span> — 2026년도 입학생은 2학년 1학기부터
+            3학년 2학기까지, 2025년도 입학생은 3학년 두 학기만 연습할 수 있습니다.
+          </li>
+          <li>
+            <span className="font-semibold text-slate-800">학기·교과 분야</span> — 탭으로 학기를 바꾸고, 국어·수학·과학·
+            정보 등 분야별로 편성된 선택 과목을 봅니다.
+          </li>
+          <li>
+            <span className="font-semibold text-slate-800">4학점 / 3학점 / 예술</span> — 학기당 4학점 선택군 최대 3과목,
+            3학점 선택군은 3학년 2학기에 최대 3과목 등 안내문에 맞춘 상한을 적용했습니다. 예술은 학기당 1과목까지입니다.
+          </li>
+          <li>
+            <span className="font-semibold text-slate-800">파란 필수 표시</span> — 과목 선택 안내문의 필수 표기 과목은
+            기본 담김 처리되어 해제할 수 없습니다.
+          </li>
+          <li>
+            <span className="font-semibold text-slate-800">계열 칩·추천</span> — 인문, 자연, 공학·정보 등 칩을 고르면
+            그 흐름에 맞는 과목에 추천 표시가 납니다. 같은 과목명은 중복 이수할 수 없습니다.
+          </li>
+          <li>
+            <span className="font-semibold text-slate-800">선수 관계</span> — 대수·미적분 등 일부 과목은 이수 순서 안내가
+            있을 때 시뮬레이터에서 막거나 안내합니다.
+          </li>
+        </ul>
+      </section>
+
+      <section className="mt-10 space-y-3">
+        <h2 className="text-base font-bold text-slate-900">과목 목록에 대해</h2>
+        <p className="text-sm leading-relaxed text-slate-600">
+          연도별 신입생 안내문과 교육과정 편성표를 참고해 2·3학년 선택 과목을 넣었습니다. 학년도마다 개설 과목·반이
+          달라질 수 있으니, 최종은 담임·교과 담당 교사 안내를 확인하세요.
+        </p>
+      </section>
+
+      <div className="mt-12 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <button
+          type="button"
+          onClick={onStartSim}
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-700"
+        >
+          시뮬레이션 시작하기
+          <ChevronRight className="h-4 w-4" />
+        </button>
+        <p className="text-xs text-slate-500">입학 연도를 고른 뒤 학기별로 과목을 담아 보세요.</p>
+      </div>
+
+      <p className="mt-14 text-center text-xs text-slate-400">
+        자료: 과목 선택 안내문·교육과정 편성표 등. 저작권은 사상고등학교에 있습니다.
+      </p>
+    </main>
+  )
+}
+
 function SectionHeader({ icon: Icon, emoji, title, subtitle }) {
   return (
     <div className="flex items-center gap-2 border-b border-slate-200 pb-2 mb-3">
@@ -255,7 +390,7 @@ function SectionHeader({ icon: Icon, emoji, title, subtitle }) {
 }
 
 export default function App() {
-  const [view, setView] = useState('home')
+  const [view, setView] = useState('guide')
   const [mode, setMode] = useState(null)
   const [track, setTrack] = useState('all')
   const [activeTab, setActiveTab] = useState('2-1')
@@ -339,7 +474,14 @@ export default function App() {
     setView('simulator')
   }
 
-  const goHome = () => {
+  const goGuide = () => {
+    setView('guide')
+    setMode(null)
+    setCart([])
+    setModal(null)
+  }
+
+  const goSimHome = () => {
     setView('home')
     setMode(null)
     setCart([])
@@ -377,24 +519,23 @@ export default function App() {
     })
   }
 
+  if (view === 'guide') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/40 to-slate-100">
+        <SiteHeader view="guide" onGuide={goGuide} onSimHome={goSimHome} />
+        <GuideView onStartSim={goSimHome} />
+      </div>
+    )
+  }
+
   if (view === 'home') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/40 to-slate-100">
-        <div className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-6 py-16">
+        <SiteHeader view="home" onGuide={goGuide} onSimHome={goSimHome} />
+        <div className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-3xl flex-col justify-center px-6 py-12">
           <div className="mb-10 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-200">
-              <GraduationCap className="h-8 w-8" strokeWidth={1.75} />
-            </div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">사상고 수강신청 시뮬레이터</h1>
-            <p className="mt-2 text-slate-600">
-              학년·학기별 선택 제한을 반영한 연습용 플래너입니다.
-            </p>
-            <p className="mx-auto mt-3 max-w-xl text-center text-xs leading-relaxed text-slate-500">
-              {CURRICULUM_DOC_NOTICE.revisionLabel}
-              <span className="mt-1 block">
-                목록은 선택과목 체크리스트(Ver 5.28) 개설분과 편성표(0423)·안내문을 함께 참고해 두었습니다.
-              </span>
-            </p>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">수강 설계 시뮬레이션</h1>
+            <p className="mt-2 text-slate-600">입학 연도를 선택한 뒤 학기별로 과목을 담아 보세요.</p>
           </div>
           <div className="flex flex-col gap-4">
             <button
@@ -403,10 +544,7 @@ export default function App() {
               className="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
             >
               <div>
-                <p className="text-lg font-semibold text-slate-900">2025학년도 입학생(1학년) 전용</p>
-                <p className="mt-1 text-sm text-slate-500">
-                  2학년 1학기부터 3학년 2학기까지 선택 설계(1학년은 학교지정·공통 이수로 본 화면에서 선택하지 않음)
-                </p>
+                <p className="text-lg font-semibold text-slate-900">2026년도 입학생</p>
               </div>
               <ChevronRight className="h-6 w-6 text-indigo-500 transition group-hover:translate-x-0.5" />
             </button>
@@ -416,16 +554,13 @@ export default function App() {
               className="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
             >
               <div>
-                <p className="text-lg font-semibold text-slate-900">현 2학년 전용</p>
-                <p className="mt-1 text-sm text-slate-500">
-                  3학년 과목 설계 · 3-1 · 3-2 탭 (3-2는 3학점군 최대 3과목)
-                </p>
+                <p className="text-lg font-semibold text-slate-900">2025년도 입학생</p>
               </div>
               <ChevronRight className="h-6 w-6 text-indigo-500 transition group-hover:translate-x-0.5" />
             </button>
           </div>
           <p className="mt-10 text-center text-xs text-slate-400">
-            자료: 과목 선택 안내문(2025학년도 신입생)·1학년 교육과정편성표(2025.4.23) 및 선택과목 체크리스트. 저작권은 사상고등학교에 있습니다.
+            자료: 과목 선택 안내문·교육과정 편성표 등. 저작권은 사상고등학교에 있습니다.
           </p>
         </div>
       </div>
@@ -434,24 +569,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-100">
-      <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white">
-              <BookOpen className="h-5 w-5" strokeWidth={2} />
-            </div>
-            <span className="text-sm font-bold text-slate-900 sm:text-base">사상고 수강신청 시스템</span>
-          </div>
-          <button
-            type="button"
-            onClick={goHome}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-800 sm:text-sm"
-          >
-            <Home className="h-4 w-4" />
-            메인으로
-          </button>
-        </div>
-      </header>
+      <SiteHeader view="simulator" onGuide={goGuide} onSimHome={goSimHome} />
 
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6 lg:flex-row lg:gap-6 sm:px-6">
         <main className="w-full flex-[0_0_100%] lg:flex-[0_0_70%] lg:max-w-[70%]">
@@ -491,11 +609,8 @@ export default function App() {
             </div>
 
             <p className="mb-4 text-xs text-slate-500">
-              {mode === 'grade1' ? '2025 입학생 · 2~3학년 선택 경로' : '현 2학년 · 3학년 설계'} ·{' '}
+              {mode === 'grade1' ? '2026년도 입학생' : '2025년도 입학생'} ·{' '}
               <span className="font-medium text-indigo-700">{TAB_LABELS[activeTab]}</span>
-              <span className="mt-1 block text-[11px] text-slate-400">
-                개설 목록: 체크리스트(Ver 5.28) + 2025학년도 1학년 편성표·안내문(0423) 반영. 동일 과목명이라도 학년도별 운영이 다를 수 있습니다.
-              </span>
             </p>
 
             <div className="space-y-8">
