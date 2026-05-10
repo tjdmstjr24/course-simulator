@@ -20,6 +20,8 @@ $files = @(
     "scripts/parse_checklist.py",
     "scripts/extract_prv_courses.py",
     "scripts/diff_curriculum_names.py",
+    "scripts/dump_curriculum_courses.py",
+    "scripts/parse_g1_offerings.py",
     "scripts/git-stage-release.ps1",
     "_cur2025_section0_plain.txt",
     "_cur2025_all_courses.tsv",
@@ -49,3 +51,4 @@ git diff --cached --stat
 Write-Host "`nNext:"
 Write-Host '  git commit -m "Deploy: GitHub Pages, 2025 curriculum data"'
 Write-Host "  git push origin main"
+
