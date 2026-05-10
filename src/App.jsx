@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react'
-import { Check, ChevronRight, GraduationCap, Info, Trash2, Palette, X, Save } from 'lucide-react'
+import { Check, ChevronRight, GraduationCap, Info, Trash2, Palette, X, Save, ShoppingBag } from 'lucide-react'
 import { COURSES, MANDATORY, CURRICULUM_DOC_NOTICE } from './courseData.js'
 
 /** 안내문 「수능·탐구 이수 트랙」·계열별 권장 선택 흐름에 맞춘 추천 칩 */
@@ -98,7 +98,7 @@ function courseTrackIds(course) {
   if (
     /(정보|인공지능|프로그래밍|데이터|공학|기술|가정|로봇|영상 제작|창의공학|창의 공학|정보과학|정보 과학|데이터 과학)/.test(n) ||
     /** 공학·정보 진로 연계 탐색: 기초 수리·실험 과학까지 같은 칩에서 추천(2학년 1학기에 정보 단일 과목 보완) */
-    /(확률과 통계|물리학|화학|생명과학|지구과학|역학과 에너지|물질과 에너지|세포와 물질대사|지구과학Ⅰ|지구시스템과학|전자기와 양자|화학 반응의 세계|실험)/.test(
+    /(확률과 통계|물리학|화학|생명과학|지구과학|역학과 에너지|물질과 에너지|세포와 물질대사|지구시스템과학|전자기와 양자|화학 반응의 세계|실험)/.test(
       n,
     )
   ) {
@@ -141,6 +141,17 @@ function hasCourseByName(courses, name, maxOrder) {
   return courses.some((c) => c.name === name && termOrder(c.grade, c.sem) <= maxOrder)
 }
 
+/** 학교 필수 중 생활·교양(정보·탐구 등) 이수로 안내하는 항목 — 게이지에 반영 */
+function countLiberalMandatoryCredits(mandatoryKeys) {
+  const liberalMandatoryNames = new Set(['주제 탐구(R&E) 기초', '주제 탐구(R&E) 심화'])
+  return mandatoryKeys.reduce((sum, key) => {
+    for (const m of MANDATORY[key] || []) {
+      if (liberalMandatoryNames.has(m.name)) sum += m.credits
+    }
+    return sum
+  }, 0)
+}
+
 function getAreaLabel(name) {
   // '중국어'·'한국어' 등에 포함된 '국어', '인문학' 속 '문학' 오탐 방지 — 국어·영어보다 먼저
   if (/(중국어|일본어|한문|한자|중국 문화|일본 문화)/.test(name)) return '제2외국어/한문'
@@ -179,32 +190,6 @@ function validateAdd(course, cart) {
 
   if (cart.some((c) => c.name === course.name)) {
     return { ok: false, message: '동일 과목명은 중복 이수할 수 없습니다. (참고사항 반영)' }
-  }
-
-  if (course.name === '미적분Ⅰ' && !hasCourseByName([...cart, course], '대수', currentOrder)) {
-    return {
-      ok: false,
-      message: '미적분Ⅰ은 대수 이수 후 선택이 원칙입니다. (동시 이수 허용 범위 내에서 대수를 함께 선택해 주세요)',
-    }
-  }
-
-  if (course.name === '경제 수학' && !hasCourseByName([...cart, course], '대수', currentOrder)) {
-    return {
-      ok: false,
-      message: '경제 수학은 대수 이수 후 선택이 원칙입니다. 대수를 먼저(또는 함께) 선택해 주세요.',
-    }
-  }
-
-  if (
-    course.name === '미적분Ⅱ' &&
-    (!hasCourseByName([...cart, course], '대수', currentOrder) ||
-      !hasCourseByName([...cart, course], '미적분Ⅰ', currentOrder))
-  ) {
-    return {
-      ok: false,
-      message:
-        '미적분Ⅱ는 대수·미적분Ⅰ 이수 후 선택이 원칙입니다. (동시 이수 허용 범위 내에서 두 과목을 함께 선택 가능)',
-    }
   }
 
   const sameTerm = cart.filter((c) => c.grade === course.grade && c.sem === course.sem)
@@ -389,6 +374,153 @@ function SectionHeader({ icon: Icon, emoji, title, subtitle }) {
   )
 }
 
+const LIBERAL_CAP = 16
+
+function SimulatorDashboard({
+  mandatoryKeys,
+  sortedCart,
+  removeFromCart,
+  requiredCourseIdSet,
+  totalCredits,
+  mandatoryTotalCredits,
+  selectedCredits,
+  liberalCredits,
+  liberalPct,
+  liberalDone,
+  onSave,
+  cartListMaxClass = 'max-h-56',
+}) {
+  return (
+    <div className="space-y-4">
+      <details className="group rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 shadow-sm open:bg-indigo-50">
+        <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold text-indigo-900 marker:hidden [&::-webkit-details-marker]:hidden">
+          <Info className="h-4 w-4 shrink-0 text-indigo-600" />
+          교육과정 요약 (편성표·안내문)
+          <span className="ml-auto text-xs font-normal text-indigo-600/90">펼치기</span>
+        </summary>
+        <ul className="mt-3 space-y-2 border-t border-indigo-100/80 pt-3 text-[11px] leading-relaxed text-slate-700">
+          {CURRICULUM_DOC_NOTICE.bullets.map((line, idx) => (
+            <li key={idx} className="flex gap-2">
+              <span className="text-indigo-500">·</span>
+              <span>{line}</span>
+            </li>
+          ))}
+          <li className="flex gap-2">
+            <span className="text-indigo-500">·</span>
+            <span>
+              동일 과목명 중복 이수 금지, 선수과목(req)은 위계 경고 후에도 담기를 선택할 수 있습니다.
+            </span>
+          </li>
+        </ul>
+      </details>
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-900">
+          <Palette className="h-4 w-4 text-indigo-600" />
+          학교 필수 과목
+        </h2>
+        <div className="space-y-3">
+          {mandatoryKeys.map((key) => (
+            <div key={key}>
+              <p className="mb-1 text-xs font-semibold text-indigo-700">{TAB_LABELS[key]}</p>
+              <ul className="space-y-1 rounded-lg bg-slate-50 p-2">
+                {(MANDATORY[key] || []).map((m) => (
+                  <li key={m.name} className="flex justify-between text-xs text-slate-700">
+                    <span className="inline-flex items-center gap-1.5 font-medium text-slate-800">
+                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                        <Check className="h-3 w-3" strokeWidth={3} />
+                      </span>
+                      {m.name}
+                    </span>
+                    <span className="text-slate-500">{m.credits > 0 ? `${m.credits}학점` : '편성표 참고'}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <h2 className="mb-3 text-sm font-bold text-slate-900">내가 담은 과목</h2>
+        {sortedCart.length === 0 ? (
+          <p className="text-xs text-slate-500">과목을 선택해 보세요.</p>
+        ) : (
+          <ul className={`space-y-2 overflow-y-auto pr-1 ${cartListMaxClass}`}>
+            {sortedCart.map((c) => (
+              <li
+                key={c.id}
+                className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50/80 px-2 py-2 text-xs"
+              >
+                <div className="min-w-0">
+                  <p className="truncate font-medium text-slate-800">{c.name}</p>
+                  <p className="text-slate-500">
+                    {TAB_LABELS[tabKey(c)]} · {c.credits}학점
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeFromCart(c.id)}
+                  disabled={requiredCourseIdSet.has(c.id)}
+                  className={`rounded-md p-1.5 transition ${
+                    requiredCourseIdSet.has(c.id)
+                      ? 'cursor-not-allowed text-slate-300'
+                      : 'text-slate-400 hover:bg-red-50 hover:text-red-600'
+                  }`}
+                  aria-label={`${c.name} 제거`}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-600 to-indigo-700 p-4 text-white shadow-lg shadow-indigo-200">
+        <p className="text-xs font-medium text-indigo-100">선택 누적 학점</p>
+        <p className="mt-1 text-2xl font-bold tabular-nums">{totalCredits}</p>
+        <p className="mt-2 text-[11px] leading-relaxed text-indigo-100/90">
+          필수 {mandatoryTotalCredits} + 선택 {selectedCredits}
+        </p>
+
+        <div className="mt-4 rounded-xl bg-white/10 p-3 ring-1 ring-white/20">
+          <div className="flex items-center justify-between gap-2 text-[11px] font-semibold text-indigo-50">
+            <span>생활·교양 영역 필수 이수 현황</span>
+            <span className="tabular-nums text-white">
+              {liberalCredits}/{LIBERAL_CAP}학점
+            </span>
+          </div>
+          <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-indigo-900/40">
+            <div
+              className={`h-full rounded-full transition-all duration-300 ${
+                liberalDone ? 'bg-emerald-400' : 'bg-amber-400'
+              }`}
+              style={{ width: `${liberalPct}%` }}
+              role="progressbar"
+              aria-valuenow={Math.round(liberalPct)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+            />
+          </div>
+          <p className="mt-1.5 text-[10px] leading-snug text-indigo-100/85">
+            기술·가정·정보·제2외국어·교양 등(isLiberal) 및 주제 탐구(R&E) 반영
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onSave}
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white py-2.5 text-sm font-semibold text-indigo-700 shadow transition hover:bg-indigo-50"
+        >
+          <Save className="h-4 w-4" />
+          최종 시간표 저장
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   const [view, setView] = useState('guide')
   const [mode, setMode] = useState(null)
@@ -396,6 +528,8 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('2-1')
   const [cart, setCart] = useState([])
   const [modal, setModal] = useState(null)
+  const [cartSheetOpen, setCartSheetOpen] = useState(false)
+  const [prereqModal, setPrereqModal] = useState(null)
 
   const tabs = useMemo(() => (mode === 'grade1' ? ['2-1', '2-2', '3-1', '3-2'] : ['3-1', '3-2']), [mode])
 
@@ -463,13 +597,35 @@ export default function App() {
   const selectedCredits = useMemo(() => selectedCourses.reduce((s, c) => s + c.credits, 0), [selectedCourses])
   const totalCredits = mandatoryTotalCredits + selectedCredits
 
+  const liberalCredits = useMemo(() => {
+    const fromElective = selectedCourses.filter((c) => c.isLiberal).reduce((s, c) => s + c.credits, 0)
+    return fromElective + countLiberalMandatoryCredits(mandatoryKeys)
+  }, [selectedCourses, mandatoryKeys])
+
+  const liberalPct = useMemo(
+    () => Math.min(100, (liberalCredits / LIBERAL_CAP) * 100),
+    [liberalCredits],
+  )
+  const liberalDone = liberalCredits >= LIBERAL_CAP
+
   const sortedCart = useMemo(() => sortCart(selectedCourses), [selectedCourses])
+
+  useEffect(() => {
+    if (!prereqModal && !cartSheetOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [prereqModal, cartSheetOpen])
 
   const startSimulator = (nextMode) => {
     setMode(nextMode)
     setTrack('all')
     setCart([])
     setModal(null)
+    setCartSheetOpen(false)
+    setPrereqModal(null)
     setActiveTab(nextMode === 'grade1' ? '2-1' : '3-1')
     setView('simulator')
   }
@@ -479,6 +635,8 @@ export default function App() {
     setMode(null)
     setCart([])
     setModal(null)
+    setCartSheetOpen(false)
+    setPrereqModal(null)
   }
 
   const goSimHome = () => {
@@ -486,6 +644,12 @@ export default function App() {
     setMode(null)
     setCart([])
     setModal(null)
+    setCartSheetOpen(false)
+    setPrereqModal(null)
+  }
+
+  const addCourseToCart = (course) => {
+    setCart((prev) => [...prev, course])
   }
 
   const toggleCourse = (course) => {
@@ -503,7 +667,14 @@ export default function App() {
       setModal({ message: result.message })
       return
     }
-    setCart((prev) => [...prev, course])
+    const reqs = course.req && course.req.length ? course.req : []
+    const currentOrder = termOrder(course.grade, course.sem)
+    const missingPrereqs = reqs.filter((name) => !hasCourseByName(selectedCourses, name, currentOrder))
+    if (missingPrereqs.length > 0) {
+      setPrereqModal({ course, missing: missingPrereqs })
+      return
+    }
+    addCourseToCart(course)
   }
 
   const removeFromCart = (id) => {
@@ -571,7 +742,7 @@ export default function App() {
     <div className="min-h-screen bg-slate-100">
       <SiteHeader view="simulator" onGuide={goGuide} onSimHome={goSimHome} />
 
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6 lg:flex-row lg:gap-6 sm:px-6">
+      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 pb-28 pt-6 lg:flex-row lg:gap-6 lg:pb-6 sm:px-6">
         <main className="w-full flex-[0_0_100%] lg:flex-[0_0_70%] lg:max-w-[70%]">
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
             <div className="mb-4 flex flex-wrap gap-2">
@@ -700,111 +871,83 @@ export default function App() {
           </div>
         </main>
 
-        <aside className="w-full flex-[0_0_100%] lg:flex-[0_0_30%] lg:max-w-[30%]">
-          <div className="sticky top-[4.25rem] space-y-4">
-            <details className="group rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 shadow-sm open:bg-indigo-50">
-              <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold text-indigo-900 marker:hidden [&::-webkit-details-marker]:hidden">
-                <Info className="h-4 w-4 shrink-0 text-indigo-600" />
-                교육과정 요약 (편성표·안내문)
-                <span className="ml-auto text-xs font-normal text-indigo-600/90">펼치기</span>
-              </summary>
-              <ul className="mt-3 space-y-2 border-t border-indigo-100/80 pt-3 text-[11px] leading-relaxed text-slate-700">
-                {CURRICULUM_DOC_NOTICE.bullets.map((line, idx) => (
-                  <li key={idx} className="flex gap-2">
-                    <span className="text-indigo-500">·</span>
-                    <span>{line}</span>
-                  </li>
-                ))}
-                <li className="flex gap-2">
-                  <span className="text-indigo-500">·</span>
-                  <span>동일 과목명 중복 이수 금지, 선수과목 위계(대수/미적분) 규칙을 시뮬레이터 검증에 반영했습니다.</span>
-                </li>
-              </ul>
-            </details>
-
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h2 className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-900">
-                <Palette className="h-4 w-4 text-indigo-600" />
-                학교 필수 과목
-              </h2>
-              <div className="space-y-3">
-                {mandatoryKeys.map((key) => (
-                  <div key={key}>
-                    <p className="mb-1 text-xs font-semibold text-indigo-700">{TAB_LABELS[key]}</p>
-                    <ul className="space-y-1 rounded-lg bg-slate-50 p-2">
-                      {(MANDATORY[key] || []).map((m) => (
-                        <li key={m.name} className="flex justify-between text-xs text-slate-700">
-                          <span className="inline-flex items-center gap-1.5 font-medium text-slate-800">
-                            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-                              <Check className="h-3 w-3" strokeWidth={3} />
-                            </span>
-                            {m.name}
-                          </span>
-                          <span className="text-slate-500">
-                            {m.credits > 0 ? `${m.credits}학점` : '편성표 참고'}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h2 className="mb-3 text-sm font-bold text-slate-900">내가 담은 과목</h2>
-              {sortedCart.length === 0 ? (
-                <p className="text-xs text-slate-500">과목을 선택해 보세요.</p>
-              ) : (
-                <ul className="max-h-56 space-y-2 overflow-y-auto pr-1">
-                  {sortedCart.map((c) => (
-                    <li
-                      key={c.id}
-                      className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50/80 px-2 py-2 text-xs"
-                    >
-                      <div className="min-w-0">
-                        <p className="truncate font-medium text-slate-800">{c.name}</p>
-                        <p className="text-slate-500">
-                          {TAB_LABELS[tabKey(c)]} · {c.credits}학점
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeFromCart(c.id)}
-                        disabled={requiredCourseIdSet.has(c.id)}
-                        className={`rounded-md p-1.5 transition ${
-                          requiredCourseIdSet.has(c.id)
-                            ? 'cursor-not-allowed text-slate-300'
-                            : 'text-slate-400 hover:bg-red-50 hover:text-red-600'
-                        }`}
-                        aria-label={`${c.name} 제거`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-600 to-indigo-700 p-4 text-white shadow-lg shadow-indigo-200">
-              <p className="text-xs font-medium text-indigo-100">선택 누적 학점</p>
-              <p className="mt-1 text-2xl font-bold tabular-nums">{totalCredits}</p>
-              <p className="mt-2 text-[11px] leading-relaxed text-indigo-100/90">
-                필수 {mandatoryTotalCredits} + 선택 {selectedCredits}
-              </p>
-              <button
-                type="button"
-                onClick={handleSave}
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white py-2.5 text-sm font-semibold text-indigo-700 shadow transition hover:bg-indigo-50"
-              >
-                <Save className="h-4 w-4" />
-                최종 시간표 저장
-              </button>
-            </div>
+        <aside className="hidden w-full lg:block lg:flex-[0_0_30%] lg:max-w-[30%]">
+          <div className="sticky top-[4.25rem]">
+            <SimulatorDashboard
+              mandatoryKeys={mandatoryKeys}
+              sortedCart={sortedCart}
+              removeFromCart={removeFromCart}
+              requiredCourseIdSet={requiredCourseIdSet}
+              totalCredits={totalCredits}
+              mandatoryTotalCredits={mandatoryTotalCredits}
+              selectedCredits={selectedCredits}
+              liberalCredits={liberalCredits}
+              liberalPct={liberalPct}
+              liberalDone={liberalDone}
+              onSave={handleSave}
+            />
           </div>
         </aside>
       </div>
+
+      <div
+        className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between gap-3 border-t border-slate-200 bg-white px-4 py-3 shadow-[0_-4px_20px_rgba(15,23,42,0.08)] lg:hidden"
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+      >
+        <p className="min-w-0 text-sm font-medium text-slate-800">
+          현재 선택:{' '}
+          <span className="font-bold tabular-nums text-indigo-700">{totalCredits}</span>
+          학점
+        </p>
+        <button
+          type="button"
+          onClick={() => setCartSheetOpen(true)}
+          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+        >
+          <ShoppingBag className="h-4 w-4" />
+          장바구니 보기
+        </button>
+      </div>
+
+      {cartSheetOpen ? (
+        <div className="fixed inset-0 z-[45] lg:hidden" role="presentation">
+          <button
+            type="button"
+            className="absolute inset-0 bg-slate-900/45"
+            aria-label="장바구니 닫기"
+            onClick={() => setCartSheetOpen(false)}
+          />
+          <div
+            className="absolute bottom-0 left-0 right-0 max-h-[88vh] overflow-y-auto rounded-t-2xl border border-slate-200 bg-white px-4 pt-3 shadow-2xl"
+            style={{ paddingBottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cart-sheet-title"
+          >
+            <div className="mx-auto mb-3 h-1.5 w-12 shrink-0 rounded-full bg-slate-200" />
+            <h2 id="cart-sheet-title" className="mb-3 text-sm font-bold text-slate-900">
+              장바구니
+            </h2>
+            <SimulatorDashboard
+              mandatoryKeys={mandatoryKeys}
+              sortedCart={sortedCart}
+              removeFromCart={removeFromCart}
+              requiredCourseIdSet={requiredCourseIdSet}
+              totalCredits={totalCredits}
+              mandatoryTotalCredits={mandatoryTotalCredits}
+              selectedCredits={selectedCredits}
+              liberalCredits={liberalCredits}
+              liberalPct={liberalPct}
+              liberalDone={liberalDone}
+              onSave={() => {
+                handleSave()
+                setCartSheetOpen(false)
+              }}
+              cartListMaxClass="max-h-[40vh]"
+            />
+          </div>
+        </div>
+      ) : null}
 
       {modal ? (
         <div
@@ -832,6 +975,44 @@ export default function App() {
                 className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700"
               >
                 확인
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {prereqModal ? (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="prereq-dialog-title"
+        >
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
+            <h3 id="prereq-dialog-title" className="text-lg font-bold text-slate-900">
+              선수 과목 안내
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-slate-700">
+              앗! {prereqModal.course.name}을(를) 수강하려면 {prereqModal.missing.join(', ')}을(를) 먼저 듣는 것을 강력히 권장합니다.
+              그래도 담으시겠습니까?
+            </p>
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setPrereqModal(null)}
+                className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
+              >
+                취소하기
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  addCourseToCart(prereqModal.course)
+                  setPrereqModal(null)
+                }}
+                className="rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-700"
+              >
+                그래도 담기
               </button>
             </div>
           </div>
