@@ -1,5 +1,16 @@
 import { useMemo, useState, useEffect } from 'react'
-import { Check, ChevronRight, GraduationCap, Info, Trash2, Palette, X, Save, ShoppingBag } from 'lucide-react'
+import {
+  Check,
+  ChevronRight,
+  GraduationCap,
+  Info,
+  Trash2,
+  Palette,
+  X,
+  Save,
+  ShoppingBag,
+  Search,
+} from 'lucide-react'
 import { COURSES, MANDATORY, CURRICULUM_DOC_NOTICE } from './courseData.js'
 
 /** 안내문 「수능·탐구 이수 트랙」·계열별 권장 선택 흐름에 맞춘 추천 칩 */
@@ -60,6 +71,22 @@ const AREA_ORDER = [
   '교양',
   '기타',
 ]
+
+const ENCYCLOPEDIA_AREA_OPTIONS = [{ id: 'all', label: '전체' }, ...AREA_ORDER.map((a) => ({ id: a, label: a }))]
+
+const REC_CAREER_LABELS = {
+  human: '인문·국어·사회',
+  engineering: '공학·정보',
+  medical: '의예·생명',
+  business: '상경',
+  all: '공통',
+}
+
+function careerLineFromRec(rec) {
+  if (!rec || !rec.length) return '다양한 진로와 연계해 설계할 수 있는 과목입니다.'
+  const parts = [...new Set(rec.map((r) => REC_CAREER_LABELS[r] || r))].filter(Boolean)
+  return `${parts.join(' · ')} 계열 흐름과 잘 맞물리는 선택지로 안내됩니다.`
+}
 
 function tabKey(course) {
   return `${course.grade}-${course.sem}`
@@ -231,133 +258,135 @@ function sortCart(courses) {
   })
 }
 
-function SiteHeader({ view, onGuide, onSimHome }) {
-  const simActive = view === 'home' || view === 'simulator'
-  const base =
-    'rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-300 ease-in-out sm:text-sm disabled:opacity-50'
-  const active = 'bg-indigo-600 text-white shadow-md shadow-indigo-500/25'
-  const idle =
-    'text-slate-500 hover:bg-slate-100/80 hover:text-slate-800 hover:shadow-sm'
+const MAIN_TABS = [
+  { id: 'guide', emoji: '📘', label: '가이드' },
+  { id: 'encyclopedia', emoji: '🔍', label: '과목 안내' },
+  { id: 'simulator', emoji: '🎮', label: '시뮬레이션' },
+]
+
+function AppTopBar() {
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-100/80 bg-white/90 shadow-sm shadow-slate-200/40 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
-        <button
-          type="button"
-          onClick={onGuide}
-          className="flex min-w-0 items-center gap-3 text-left transition-all duration-300 ease-in-out hover:opacity-90"
-        >
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-lg">
-            <GraduationCap className="h-5 w-5" strokeWidth={1.75} />
-          </div>
-          <span className="truncate text-sm font-extrabold tracking-tight text-slate-900 sm:text-base">
-            사상고 고교학점제 가이드
-          </span>
-        </button>
-        <nav className="flex shrink-0 items-center gap-2 sm:gap-3" aria-label="주요 메뉴">
-          <button
-            type="button"
-            onClick={onGuide}
-            className={`${base} ${view === 'guide' ? active : idle}`}
-          >
-            가이드
-          </button>
-          <button
-            type="button"
-            onClick={onSimHome}
-            className={`${base} ${simActive ? active : idle}`}
-          >
-            시뮬레이션
-          </button>
-        </nav>
+    <header className="sticky top-0 z-30 border-b border-slate-100 bg-white/95 shadow-sm backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center gap-3 px-5 py-3.5 sm:px-8">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-md shadow-indigo-600/25">
+          <GraduationCap className="h-5 w-5" strokeWidth={1.75} />
+        </div>
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">사상고등학교</p>
+          <h1 className="truncate text-base font-extrabold tracking-tight text-slate-900 sm:text-lg">고교학점제 플래너</h1>
+        </div>
       </div>
     </header>
   )
 }
 
-function GuideView({ onStartSim }) {
+function MainTabNav({ value, onChange }) {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-14 sm:px-8 sm:py-20">
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-100 bg-white/95 shadow-[0_-6px_24px_rgba(15,23,42,0.06)] backdrop-blur-xl"
+      style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
+      aria-label="주요 탭"
+    >
+      <div className="mx-auto flex max-w-lg items-stretch justify-around gap-1 px-2 pt-2">
+        {MAIN_TABS.map((tab) => {
+          const active = value === tab.id
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => onChange(tab.id)}
+              className={`flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-2xl py-2 transition-all duration-300 ease-in-out ${
+                active
+                  ? 'bg-indigo-50 text-indigo-700 shadow-inner shadow-indigo-100/80'
+                  : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
+              }`}
+            >
+              <span className="text-xl leading-none" aria-hidden>
+                {tab.emoji}
+              </span>
+              <span className={`text-[11px] font-bold ${active ? 'text-indigo-700' : 'text-slate-500'}`}>{tab.label}</span>
+            </button>
+          )
+        })}
+      </div>
+    </nav>
+  )
+}
+
+function GuideTabContent({ onGoSimulator }) {
+  return (
+    <div className="mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-10">
       <p className="text-sm font-semibold text-indigo-600">사상고등학교</p>
-      <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">고교학점제 안내</h1>
-      <p className="mt-5 text-base font-medium leading-relaxed text-slate-500">
-        이 사이트는 고교학점제·선택 과목 구조를 빠르게 이해하고, 사상고 안내문·편성표에 맞춘{' '}
-        <strong className="font-bold text-slate-800">연습용 수강 설계 시뮬레이터</strong>를 함께 제공합니다. 실제
-        수강신청·반 편성은 학교 공지를 따릅니다.
+      <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">핵심 규칙</h2>
+      <p className="mt-3 max-w-2xl text-base font-medium leading-relaxed text-slate-500">
+        안내문·편성표 기준으로 정리했습니다. 하단 <strong className="font-bold text-slate-800">시뮬레이션</strong>에서 연도를 고른 뒤
+        설계를 시작하세요.
       </p>
 
-      <section className="mt-14 space-y-4">
-        <h2 className="text-lg font-extrabold text-slate-900">고교학점제를 한 줄로</h2>
-        <p className="text-base font-medium leading-relaxed text-slate-500">
-          교과목은 <strong className="font-bold text-slate-800">필수 이수</strong>와 <strong className="font-bold text-slate-800">학생 선택</strong>이
-          어우러지고, 과목마다 <strong className="font-bold text-slate-800">학점</strong>이 붙습니다. 일정 학점을 채우면 해당
-          과목을 이수한 것으로 인정됩니다. 창의적 체험활동 등 교과 밖 활동도 별도 기준으로 이수합니다.
-        </p>
-      </section>
-
-      <section className="mt-14 space-y-4">
-        <h2 className="text-lg font-extrabold text-slate-900">졸업·학점(이 사이트 안내 기준)</h2>
-        <ul className="list-inside list-disc space-y-3 text-base font-medium leading-relaxed text-slate-500">
-          {CURRICULUM_DOC_NOTICE.bullets.slice(0, 4).map((line, idx) => (
-            <li key={idx}>{line}</li>
-          ))}
-        </ul>
-        <p className="text-sm font-medium leading-relaxed text-slate-500">{CURRICULUM_DOC_NOTICE.revisionLabel}</p>
-      </section>
-
-      <section className="mt-14 space-y-4">
-        <h2 className="text-lg font-extrabold text-slate-900">시뮬레이터로 할 수 있는 것</h2>
-        <ul className="space-y-3 text-base font-medium leading-relaxed text-slate-500">
-          <li>
-            <span className="font-bold text-slate-800">입학 연도별 모드</span> — 2026년도 입학생은 2학년 1학기부터
-            3학년 2학기까지, 2025년도 입학생은 3학년 두 학기만 연습할 수 있습니다.
-          </li>
-          <li>
-            <span className="font-bold text-slate-800">학기·교과 분야</span> — 탭으로 학기를 바꾸고, 국어·수학·과학·
-            정보 등 분야별로 편성된 선택 과목을 봅니다.
-          </li>
-          <li>
-            <span className="font-bold text-slate-800">4학점 / 3학점 / 예술</span> — 학기당 4학점 선택군 최대 3과목,
-            3학점 선택군은 3학년 2학기에 최대 3과목 등 안내문에 맞춘 상한을 적용했습니다. 예술은 학기당 1과목까지입니다.
-          </li>
-          <li>
-            <span className="font-bold text-slate-800">파란 필수 표시</span> — 과목 선택 안내문의 필수 표기 과목은
-            기본 담김 처리되어 해제할 수 없습니다.
-          </li>
-          <li>
-            <span className="font-bold text-slate-800">계열 칩·추천</span> — 인문, 자연, 공학·정보 등 칩을 고르면
-            그 흐름에 맞는 과목에 추천 표시가 납니다. 같은 과목명은 중복 이수할 수 없습니다.
-          </li>
-          <li>
-            <span className="font-bold text-slate-800">선수 관계</span> — 대수·미적분 등 일부 과목은 이수 순서 안내가
-            있을 때 시뮬레이터에서 막거나 안내합니다.
-          </li>
-        </ul>
-      </section>
-
-      <section className="mt-14 space-y-4">
-        <h2 className="text-lg font-extrabold text-slate-900">과목 목록에 대해</h2>
-        <p className="text-base font-medium leading-relaxed text-slate-500">
-          연도별 신입생 안내문과 교육과정 편성표를 참고해 2·3학년 선택 과목을 넣었습니다. 학년도마다 개설 과목·반이
-          달라질 수 있으니, 최종은 담임·교과 담당 교사 안내를 확인하세요.
-        </p>
-      </section>
-
-      <div className="mt-16 flex flex-col gap-4 sm:flex-row sm:items-center">
-        <button
-          type="button"
-          onClick={onStartSim}
-          className="inline-flex items-center justify-center gap-2 rounded-3xl bg-indigo-600 px-8 py-4 text-sm font-bold text-white shadow-lg shadow-indigo-500/30 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-500/35"
-        >
-          시뮬레이션 시작하기
-          <ChevronRight className="h-4 w-4" />
-        </button>
-        <p className="text-sm font-medium text-slate-500">입학 연도를 고른 뒤 학기별로 과목을 담아 보세요.</p>
+      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-md shadow-slate-200/40 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg">
+          <p className="text-xs font-bold text-indigo-600">생활·교양</p>
+          <p className="mt-2 text-3xl font-extrabold tabular-nums text-slate-900">16</p>
+          <p className="mt-1 text-sm font-bold text-slate-800">학점 이수</p>
+          <p className="mt-3 text-sm font-medium leading-relaxed text-slate-500">
+            기술·가정, 정보, 제2외국어, 교양 영역에서 졸업 전까지 총 16학점을 채워야 합니다. 시뮬레이터 대시보드에서 진행률을 확인할 수 있습니다.
+          </p>
+        </div>
+        <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-md shadow-slate-200/40 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg">
+          <p className="text-xs font-bold text-indigo-600">학기당 선택</p>
+          <p className="mt-2 text-lg font-extrabold leading-snug text-slate-900">4학점 3과목 + 3학점 4과목</p>
+          <p className="mt-3 text-sm font-medium leading-relaxed text-slate-500">
+            2학년·3학년 1학기 기준(3학년 2학기는 3학점군 최대 3과목). 예술은 학기당 1과목까지입니다.
+          </p>
+        </div>
+        <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-md shadow-slate-200/40 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg sm:col-span-2 lg:col-span-1">
+          <p className="text-xs font-bold text-indigo-600">선수 과목</p>
+          <p className="mt-2 text-lg font-extrabold text-slate-900">위계를 먼저 확인</p>
+          <p className="mt-3 text-sm font-medium leading-relaxed text-slate-500">
+            예: 미적분Ⅰ은 대수 이수 후가 원칙입니다. 시뮬레이터에서 선수가 없으면 안내 후에도 담을지 선택할 수 있습니다.
+          </p>
+        </div>
+        <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-md shadow-slate-200/40 sm:col-span-2 lg:col-span-3">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold text-indigo-600">졸업 이수</p>
+              <p className="mt-1 text-2xl font-extrabold text-slate-900">교과 174 + 창체 18 = 192학점</p>
+              <p className="mt-2 text-sm font-medium text-slate-500">사상고 안내 기준(자율교육과정 주간 등 반영 시 195학점 안내도 참고).</p>
+            </div>
+            <div className="flex gap-3 text-center">
+              <div className="rounded-2xl bg-slate-50 px-5 py-3">
+                <p className="text-2xl font-extrabold text-indigo-600">81</p>
+                <p className="text-xs font-semibold text-slate-500">국·수·영 상한(참고)</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <p className="mt-20 text-center text-sm font-medium text-slate-400">
+      <div className="mt-10 rounded-3xl border border-slate-100 bg-white p-6 shadow-md sm:p-8">
+        <h3 className="text-base font-extrabold text-slate-900">한 줄 요약</h3>
+        <p className="mt-3 text-sm font-medium leading-relaxed text-slate-500">
+          {CURRICULUM_DOC_NOTICE.bullets[0]}
+        </p>
+        <p className="mt-4 text-xs font-medium text-slate-400">{CURRICULUM_DOC_NOTICE.revisionLabel}</p>
+      </div>
+
+      <div className="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+        <button
+          type="button"
+          onClick={onGoSimulator}
+          className="inline-flex items-center justify-center gap-2 rounded-3xl bg-indigo-600 px-8 py-4 text-sm font-bold text-white shadow-lg shadow-indigo-500/30 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-indigo-700 hover:shadow-xl"
+        >
+          시뮬레이션으로 이동
+          <ChevronRight className="h-4 w-4" />
+        </button>
+        <p className="text-sm font-medium text-slate-500">하단 탭에서 🎮 시뮬레이션을 눌러도 됩니다.</p>
+      </div>
+
+      <p className="mt-14 text-center text-xs font-medium text-slate-400">
         자료: 과목 선택 안내문·교육과정 편성표 등. 저작권은 사상고등학교에 있습니다.
       </p>
-    </main>
+    </div>
   )
 }
 
@@ -426,28 +455,34 @@ function SimulatorDashboard({
           </span>
           학교 필수 과목
         </h2>
-        <div className="space-y-5">
-          {mandatoryKeys.map((key) => (
-            <div key={key}>
-              <p className="mb-2 text-xs font-bold text-indigo-600">{TAB_LABELS[key]}</p>
-              <ul className="space-y-2 rounded-2xl bg-slate-50/90 p-4">
-                {(MANDATORY[key] || []).map((m) => (
-                  <li key={m.name} className="flex justify-between gap-3 text-xs">
-                    <span className="inline-flex min-w-0 items-center gap-2 font-semibold text-slate-800">
-                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700">
-                        <Check className="h-3 w-3" strokeWidth={3} />
+        {mandatoryKeys.length === 0 ? (
+          <p className="rounded-2xl bg-slate-50 px-4 py-4 text-sm font-medium leading-relaxed text-slate-500">
+            시뮬레이션에서 입학 연도(2026·2025)를 선택하면 학기별 필수 항목이 여기에 표시됩니다.
+          </p>
+        ) : (
+          <div className="space-y-5">
+            {mandatoryKeys.map((key) => (
+              <div key={key}>
+                <p className="mb-2 text-xs font-bold text-indigo-600">{TAB_LABELS[key]}</p>
+                <ul className="space-y-2 rounded-2xl bg-slate-50/90 p-4">
+                  {(MANDATORY[key] || []).map((m) => (
+                    <li key={m.name} className="flex justify-between gap-3 text-xs">
+                      <span className="inline-flex min-w-0 items-center gap-2 font-semibold text-slate-800">
+                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700">
+                          <Check className="h-3 w-3" strokeWidth={3} />
+                        </span>
+                        <span className="truncate">{m.name}</span>
                       </span>
-                      <span className="truncate">{m.name}</span>
-                    </span>
-                    <span className="shrink-0 font-medium text-slate-500">
-                      {m.credits > 0 ? `${m.credits}학점` : '편성표 참고'}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+                      <span className="shrink-0 font-medium text-slate-500">
+                        {m.credits > 0 ? `${m.credits}학점` : '편성표 참고'}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-md shadow-slate-200/40">
@@ -531,7 +566,7 @@ function SimulatorDashboard({
 }
 
 export default function App() {
-  const [view, setView] = useState('guide')
+  const [mainTab, setMainTab] = useState('guide')
   const [mode, setMode] = useState(null)
   const [track, setTrack] = useState('all')
   const [activeTab, setActiveTab] = useState('2-1')
@@ -539,8 +574,14 @@ export default function App() {
   const [modal, setModal] = useState(null)
   const [cartSheetOpen, setCartSheetOpen] = useState(false)
   const [prereqModal, setPrereqModal] = useState(null)
+  const [encyclopediaArea, setEncyclopediaArea] = useState('all')
+  const [encyclopediaSearch, setEncyclopediaSearch] = useState('')
+  const [encyclopediaCourse, setEncyclopediaCourse] = useState(null)
 
-  const tabs = useMemo(() => (mode === 'grade1' ? ['2-1', '2-2', '3-1', '3-2'] : ['3-1', '3-2']), [mode])
+  const tabs = useMemo(() => {
+    if (!mode) return []
+    return mode === 'grade1' ? ['2-1', '2-2', '3-1', '3-2'] : ['3-1', '3-2']
+  }, [mode])
 
   useEffect(() => {
     if (!tabs.length) return
@@ -552,7 +593,23 @@ export default function App() {
     return [g, s]
   }, [activeTab])
 
-  const termCourses = useMemo(() => COURSES.filter((c) => c.grade === tg && c.sem === ts), [tg, ts])
+  const termCourses = useMemo(() => {
+    if (!mode) return []
+    return COURSES.filter((c) => c.grade === tg && c.sem === ts)
+  }, [mode, tg, ts])
+
+  const encyclopediaFiltered = useMemo(() => {
+    let list = [...COURSES]
+    if (encyclopediaArea !== 'all') {
+      list = list.filter((c) => getAreaLabel(c.name) === encyclopediaArea)
+    }
+    const q = encyclopediaSearch.trim()
+    if (q) {
+      list = list.filter((c) => c.name.includes(q) || c.id.toLowerCase().includes(q.toLowerCase()))
+    }
+    list.sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+    return list
+  }, [encyclopediaArea, encyclopediaSearch])
 
   const requiredCourses = useMemo(
     () =>
@@ -620,41 +677,22 @@ export default function App() {
   const sortedCart = useMemo(() => sortCart(selectedCourses), [selectedCourses])
 
   useEffect(() => {
-    if (!prereqModal && !cartSheetOpen) return
+    if (!prereqModal && !cartSheetOpen && !encyclopediaCourse) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
       document.body.style.overflow = prev
     }
-  }, [prereqModal, cartSheetOpen])
+  }, [prereqModal, cartSheetOpen, encyclopediaCourse])
 
   const startSimulator = (nextMode) => {
     setMode(nextMode)
     setTrack('all')
-    setCart([])
     setModal(null)
     setCartSheetOpen(false)
     setPrereqModal(null)
     setActiveTab(nextMode === 'grade1' ? '2-1' : '3-1')
-    setView('simulator')
-  }
-
-  const goGuide = () => {
-    setView('guide')
-    setMode(null)
-    setCart([])
-    setModal(null)
-    setCartSheetOpen(false)
-    setPrereqModal(null)
-  }
-
-  const goSimHome = () => {
-    setView('home')
-    setMode(null)
-    setCart([])
-    setModal(null)
-    setCartSheetOpen(false)
-    setPrereqModal(null)
+    setMainTab('simulator')
   }
 
   const addCourseToCart = (course) => {
@@ -686,6 +724,34 @@ export default function App() {
     addCourseToCart(course)
   }
 
+  /** 과목 안내 패널에서 담기 — 성공·취소 시 패널 닫기, 선수과목은 모달 유지 */
+  const addFromEncyclopediaPanel = (course) => {
+    if (requiredCourseIdSet.has(course.id)) {
+      setModal({ message: '이 과목은 안내문 파란색 필수 과목으로 기본 선택(해제 불가)입니다.' })
+      return
+    }
+    if (cart.some((c) => c.id === course.id)) {
+      setCart((prev) => prev.filter((c) => c.id !== course.id))
+      setEncyclopediaCourse(null)
+      return
+    }
+    const result = validateAdd(course, selectedCourses)
+    if (!result.ok) {
+      setModal({ message: result.message })
+      return
+    }
+    const reqs = course.req && course.req.length ? course.req : []
+    const currentOrder = termOrder(course.grade, course.sem)
+    const missingPrereqs = reqs.filter((name) => !hasCourseByName(selectedCourses, name, currentOrder))
+    if (missingPrereqs.length > 0) {
+      setPrereqModal({ course, missing: missingPrereqs })
+      return
+    }
+    addCourseToCart(course)
+    setEncyclopediaCourse(null)
+    setMainTab('simulator')
+  }
+
   const removeFromCart = (id) => {
     setCart((prev) => prev.filter((c) => c.id !== id))
   }
@@ -699,107 +765,150 @@ export default function App() {
     })
   }
 
-  if (view === 'guide') {
-    return (
-      <div className="min-h-screen bg-slate-50">
-        <SiteHeader view="guide" onGuide={goGuide} onSimHome={goSimHome} />
-        <GuideView onStartSim={goSimHome} />
-      </div>
-    )
-  }
-
-  if (view === 'home') {
-    return (
-      <div className="min-h-screen bg-slate-50">
-        <SiteHeader view="home" onGuide={goGuide} onSimHome={goSimHome} />
-        <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-3xl flex-col justify-center px-8 py-16">
-          <div className="mb-12 text-center">
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">수강 설계 시뮬레이션</h1>
-            <p className="mt-4 text-base font-medium text-slate-500">입학 연도를 선택한 뒤 학기별로 과목을 담아 보세요.</p>
-          </div>
-          <div className="flex flex-col gap-6">
-            <button
-              type="button"
-              onClick={() => startSimulator('grade1')}
-              className="group flex items-center justify-between rounded-3xl border border-slate-100 bg-white p-8 text-left shadow-md shadow-slate-200/50 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-100/40"
-            >
-              <div>
-                <p className="text-lg font-extrabold text-slate-900">2026년도 입학생</p>
-              </div>
-              <ChevronRight className="h-6 w-6 text-indigo-500 transition-all duration-300 ease-in-out group-hover:translate-x-1" />
-            </button>
-            <button
-              type="button"
-              onClick={() => startSimulator('grade2')}
-              className="group flex items-center justify-between rounded-3xl border border-slate-100 bg-white p-8 text-left shadow-md shadow-slate-200/50 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-100/40"
-            >
-              <div>
-                <p className="text-lg font-extrabold text-slate-900">2025년도 입학생</p>
-              </div>
-              <ChevronRight className="h-6 w-6 text-indigo-500 transition-all duration-300 ease-in-out group-hover:translate-x-1" />
-            </button>
-          </div>
-          <p className="mt-14 text-center text-sm font-medium text-slate-400">
-            자료: 과목 선택 안내문·교육과정 편성표 등. 저작권은 사상고등학교에 있습니다.
-          </p>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-slate-50">
-      <SiteHeader view="simulator" onGuide={goGuide} onSimHome={goSimHome} />
+    <div className="min-h-screen bg-slate-50 pb-28">
+      <AppTopBar />
 
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-5 pb-32 pt-8 lg:flex-row lg:gap-10 lg:pb-8 sm:px-8">
-        <main className="w-full flex-[0_0_100%] lg:flex-[0_0_70%] lg:max-w-[70%]">
-          <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-md shadow-slate-200/50 sm:p-8 lg:p-10">
-            <div className="mb-6 flex flex-wrap gap-3">
-              {TRACK_CHIPS.map((chip) => (
-                <button
-                  key={chip.id}
-                  type="button"
-                  onClick={() => setTrack(chip.id)}
-                  className={`rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-300 ease-in-out sm:text-sm ${
-                    track === chip.id
-                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30 hover:-translate-y-0.5 hover:shadow-lg'
-                      : 'border border-transparent bg-slate-100/90 text-slate-500 shadow-sm hover:-translate-y-0.5 hover:border-slate-200 hover:bg-white hover:text-slate-800 hover:shadow-md'
-                  }`}
-                >
-                  {chip.label}
-                </button>
-              ))}
-            </div>
+      <div key={mainTab} className="animate-fade-in">
+        {mainTab === 'guide' ? (
+          <GuideTabContent onGoSimulator={() => setMainTab('simulator')} />
+        ) : null}
 
-            <div className="mb-6 flex flex-wrap gap-2 border-b border-slate-100 pb-2">
-              {tabs.map((tk) => (
-                <button
-                  key={tk}
-                  type="button"
-                  onClick={() => setActiveTab(tk)}
-                  className={`rounded-2xl px-4 py-3 text-xs font-bold transition-all duration-300 ease-in-out sm:text-sm ${
-                    activeTab === tk
-                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/25'
-                      : 'text-slate-500 hover:bg-slate-100/80 hover:text-slate-900'
-                  }`}
-                >
-                  {TAB_LABELS[tk]}
-                </button>
-              ))}
-            </div>
-
-            <p className="mb-8 text-sm font-medium text-slate-500">
-              {mode === 'grade1' ? '2026년도 입학생' : '2025년도 입학생'} ·{' '}
-              <span className="font-bold text-indigo-600">{TAB_LABELS[activeTab]}</span>
+        {mainTab === 'encyclopedia' ? (
+          <div className="mx-auto max-w-3xl px-5 py-6 sm:px-8">
+            <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">과목 안내</h2>
+            <p className="mt-2 text-sm font-medium leading-relaxed text-slate-500">
+              개설 과목을 분야·검색으로 찾고, 상세에서 바로 담을 수 있습니다. 장바구니는 시뮬레이션 탭과 실시간으로 같습니다.
             </p>
+            <div className="relative mt-5">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+              <input
+                type="search"
+                value={encyclopediaSearch}
+                onChange={(e) => setEncyclopediaSearch(e.target.value)}
+                placeholder="과목명 또는 코드 검색"
+                className="w-full rounded-2xl border border-slate-100 bg-white py-3.5 pl-12 pr-4 text-sm font-medium text-slate-900 shadow-sm outline-none transition focus:ring-2 focus:ring-indigo-200"
+              />
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {ENCYCLOPEDIA_AREA_OPTIONS.map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setEncyclopediaArea(opt.id)}
+                  className={`rounded-full px-4 py-2 text-xs font-bold transition-all duration-300 ease-in-out ${
+                    encyclopediaArea === opt.id
+                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/25'
+                      : 'bg-white text-slate-600 shadow-sm ring-1 ring-slate-100 hover:ring-indigo-100'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+            <ul className="mt-6 max-h-[60vh] space-y-2 overflow-y-auto pr-1 sm:max-h-[min(70vh,36rem)]">
+              {encyclopediaFiltered.length === 0 ? (
+                <li className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-8 text-center text-sm font-medium text-slate-500">
+                  조건에 맞는 과목이 없습니다. 검색어나 분야 필터를 바꿔 보세요.
+                </li>
+              ) : null}
+              {encyclopediaFiltered.map((course) => (
+                <li key={course.id}>
+                  <button
+                    type="button"
+                    onClick={() => setEncyclopediaCourse(course)}
+                    className="flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-white px-4 py-3.5 text-left shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-md"
+                  >
+                    <span className="font-bold text-slate-900">{course.name}</span>
+                    <span className="shrink-0 text-xs font-medium text-slate-500">
+                      {getAreaLabel(course.name)} · {course.credits}학점
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
-            <div className="space-y-12 sm:space-y-14">
+        {mainTab === 'simulator' ? (
+          <div
+            className={`mx-auto flex max-w-7xl flex-col gap-8 px-5 pt-6 lg:flex-row lg:gap-10 sm:px-8 ${
+              mode ? 'pb-36 lg:pb-8' : 'pb-6 lg:pb-8'
+            }`}
+          >
+            <main className="w-full flex-[0_0_100%] lg:flex-[0_0_70%] lg:max-w-[70%]">
+              <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-md shadow-slate-200/50 sm:p-8 lg:p-10">
+                {!mode ? (
+                  <div className="py-4">
+                    <h2 className="text-xl font-extrabold text-slate-900">입학 연도</h2>
+                    <p className="mt-2 text-sm font-medium text-slate-500">먼저 연도를 고르면 학기 탭과 필수 반영이 켜집니다.</p>
+                    <div className="mt-8 flex flex-col gap-4 sm:max-w-md">
+                      <button
+                        type="button"
+                        onClick={() => startSimulator('grade1')}
+                        className="group flex items-center justify-between rounded-3xl border border-slate-100 bg-white p-6 text-left shadow-md transition-all duration-300 ease-in-out hover:-translate-y-1 hover:border-indigo-100 hover:shadow-lg"
+                      >
+                        <p className="text-lg font-extrabold text-slate-900">2026년도 입학생</p>
+                        <ChevronRight className="h-6 w-6 text-indigo-500 transition group-hover:translate-x-1" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => startSimulator('grade2')}
+                        className="group flex items-center justify-between rounded-3xl border border-slate-100 bg-white p-6 text-left shadow-md transition-all duration-300 ease-in-out hover:-translate-y-1 hover:border-indigo-100 hover:shadow-lg"
+                      >
+                        <p className="text-lg font-extrabold text-slate-900">2025년도 입학생</p>
+                        <ChevronRight className="h-6 w-6 text-indigo-500 transition group-hover:translate-x-1" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="mb-6 flex flex-wrap gap-3">
+                      {TRACK_CHIPS.map((chip) => (
+                        <button
+                          key={chip.id}
+                          type="button"
+                          onClick={() => setTrack(chip.id)}
+                          className={`rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all duration-300 ease-in-out sm:text-sm ${
+                            track === chip.id
+                              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30 hover:-translate-y-0.5 hover:shadow-lg'
+                              : 'border border-transparent bg-slate-100/90 text-slate-500 shadow-sm hover:-translate-y-0.5 hover:border-slate-200 hover:bg-white hover:text-slate-800 hover:shadow-md'
+                          }`}
+                        >
+                          {chip.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="mb-6 flex flex-wrap gap-2 border-b border-slate-100 pb-2">
+                      {tabs.map((tk) => (
+                        <button
+                          key={tk}
+                          type="button"
+                          onClick={() => setActiveTab(tk)}
+                          className={`rounded-2xl px-4 py-3 text-xs font-bold transition-all duration-300 ease-in-out sm:text-sm ${
+                            activeTab === tk
+                              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/25'
+                              : 'text-slate-500 hover:bg-slate-100/80 hover:text-slate-900'
+                          }`}
+                        >
+                          {TAB_LABELS[tk]}
+                        </button>
+                      ))}
+                    </div>
+
+                    <p className="mb-8 text-sm font-medium text-slate-500">
+                      {mode === 'grade1' ? '2026년도 입학생' : '2025년도 입학생'} ·{' '}
+                      <span className="font-bold text-indigo-600">{TAB_LABELS[activeTab]}</span>
+                    </p>
+
+                    <div className="space-y-12 sm:space-y-14">
               {coursesByArea.map(({ area, courses }) => (
                 <section key={area}>
                   <SectionHeader
                     emoji="📚"
                     title={`${area} 분야`}
-                    subtitle="계열 칩 선택 시, 이미 담았거나 담을 수 없는 과목·다른 학기에 두는 수능 궤적 과목은 추천이 뜨지 않습니다."
+                    subtitle="계열·학기 조건에 맞을 때만 추천 배지가 표시됩니다."
                   />
                   <div className="grid gap-5 sm:grid-cols-2 lg:gap-6">
                     {courses.map((course) => {
@@ -878,11 +987,13 @@ export default function App() {
                   </div>
                 </section>
               ))}
-            </div>
-          </div>
-        </main>
+                    </div>
+                  </>
+                )}
+              </div>
+            </main>
 
-        <aside className="hidden w-full lg:block lg:flex-[0_0_30%] lg:max-w-[30%]">
+            <aside className="hidden w-full lg:block lg:flex-[0_0_30%] lg:max-w-[30%]">
           <div className="sticky top-[5.25rem]">
             <SimulatorDashboard
               mandatoryKeys={mandatoryKeys}
@@ -897,31 +1008,37 @@ export default function App() {
               liberalDone={liberalDone}
               onSave={handleSave}
             />
+            </div>
+            </aside>
           </div>
-        </aside>
+        ) : null}
       </div>
 
-      <div
-        className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between gap-4 border-t border-slate-100 bg-white/95 px-5 py-4 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl lg:hidden"
-        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
-      >
-        <p className="min-w-0 text-sm font-medium text-slate-500">
-          현재 선택:{' '}
-          <span className="font-extrabold tabular-nums text-indigo-600">{totalCredits}</span>
-          학점
-        </p>
-        <button
-          type="button"
-          onClick={() => setCartSheetOpen(true)}
-          className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/30 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-xl"
+      <MainTabNav value={mainTab} onChange={setMainTab} />
+
+      {mainTab === 'simulator' && mode ? (
+        <div
+          className="fixed bottom-[4.75rem] left-0 right-0 z-40 flex items-center justify-between gap-4 border-t border-slate-100 bg-white/95 px-5 py-3.5 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl lg:hidden"
+          style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
         >
-          <ShoppingBag className="h-4 w-4" />
-          장바구니 보기
-        </button>
-      </div>
+          <p className="min-w-0 text-sm font-medium text-slate-500">
+            현재 선택:{' '}
+            <span className="font-extrabold tabular-nums text-indigo-600">{totalCredits}</span>
+            학점
+          </p>
+          <button
+            type="button"
+            onClick={() => setCartSheetOpen(true)}
+            className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/30 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-xl"
+          >
+            <ShoppingBag className="h-4 w-4" />
+            장바구니 보기
+          </button>
+        </div>
+      ) : null}
 
       {cartSheetOpen ? (
-        <div className="fixed inset-0 z-[45] lg:hidden" role="presentation">
+        <div className="fixed inset-0 z-[58] lg:hidden" role="presentation">
           <button
             type="button"
             className="absolute inset-0 bg-slate-900/45"
@@ -960,9 +1077,86 @@ export default function App() {
         </div>
       ) : null}
 
+      {encyclopediaCourse ? (
+        <>
+          <button
+            type="button"
+            className="fixed inset-0 z-[55] bg-slate-900/40 backdrop-blur-sm"
+            aria-label="상세 닫기"
+            onClick={() => setEncyclopediaCourse(null)}
+          />
+          <div className="fixed inset-y-0 right-0 z-[60] flex w-full max-w-lg animate-slide-in-right flex-col border-l border-slate-100 bg-white shadow-2xl">
+            <div className="flex shrink-0 items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-indigo-600">{getAreaLabel(encyclopediaCourse.name)}</p>
+                <h2 className="mt-1 text-xl font-extrabold tracking-tight text-slate-900">{encyclopediaCourse.name}</h2>
+                <p className="mt-1 text-sm font-medium text-slate-500">
+                  {TAB_LABELS[tabKey(encyclopediaCourse)]} · {encyclopediaCourse.credits}학점 · {encyclopediaCourse.id}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEncyclopediaCourse(null)}
+                className="shrink-0 rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                aria-label="닫기"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
+              <h3 className="text-sm font-extrabold text-slate-900">핵심 내용</h3>
+              <p className="mt-2 text-sm font-medium leading-relaxed text-slate-500">
+                안내문·편성표 개설 목록에 포함된 선택 과목입니다. 심화·수능 연계는 학기·계열 설계에 따라 달라질 수 있습니다.
+              </p>
+              <h3 className="mt-6 text-sm font-extrabold text-slate-900">진로 맵</h3>
+              <p className="mt-2 text-sm font-medium leading-relaxed text-slate-500">
+                {careerLineFromRec(encyclopediaCourse.rec)}
+              </p>
+              {encyclopediaCourse.req?.length ? (
+                <>
+                  <h3 className="mt-6 text-sm font-extrabold text-slate-900">선수 과목</h3>
+                  <p className="mt-2 text-sm font-medium text-slate-500">
+                    {encyclopediaCourse.req.join(', ')} 이수 후 권장됩니다.
+                  </p>
+                </>
+              ) : null}
+              {encyclopediaCourse.isLiberal ? (
+                <p className="mt-4 inline-flex rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-bold text-indigo-700">
+                  생활·교양 16학점 반영 과목
+                </p>
+              ) : null}
+              <h3 className="mt-6 text-sm font-extrabold text-slate-900">선배들의 한마디</h3>
+              <p className="mt-2 rounded-2xl border border-slate-100 bg-slate-50/90 px-4 py-3 text-sm font-medium italic leading-relaxed text-slate-500">
+                &ldquo;{encyclopediaCourse.name}&rdquo;은(는) 설계만 잘해도 후배 기록이 쌓일 거예요. (데모 문구)
+              </p>
+            </div>
+            <div className="shrink-0 border-t border-slate-100 bg-white p-4 shadow-[0_-8px_24px_rgba(15,23,42,0.04)]">
+              <button
+                type="button"
+                onClick={() => addFromEncyclopediaPanel(encyclopediaCourse)}
+                disabled={requiredCourseIdSet.has(encyclopediaCourse.id)}
+                className={`w-full rounded-2xl py-3.5 text-sm font-bold transition-all duration-300 ease-in-out ${
+                  requiredCourseIdSet.has(encyclopediaCourse.id)
+                    ? 'cursor-not-allowed bg-slate-100 text-slate-400'
+                    : cart.some((c) => c.id === encyclopediaCourse.id)
+                      ? 'border-2 border-slate-200 bg-white text-slate-800 hover:bg-slate-50'
+                      : 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-700'
+                }`}
+              >
+                {requiredCourseIdSet.has(encyclopediaCourse.id)
+                  ? '파란 필수(연도 선택 시 자동 반영)'
+                  : cart.some((c) => c.id === encyclopediaCourse.id)
+                    ? '장바구니에서 빼기'
+                    : '이 과목 담기'}
+              </button>
+            </div>
+          </div>
+        </>
+      ) : null}
+
       {modal ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-5 backdrop-blur-md"
+          className="fixed inset-0 z-[65] flex items-center justify-center bg-slate-900/45 p-5 backdrop-blur-md"
           role="dialog"
           aria-modal="true"
         >
@@ -994,7 +1188,7 @@ export default function App() {
 
       {prereqModal ? (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/45 p-5 backdrop-blur-md"
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/45 p-5 backdrop-blur-md"
           role="dialog"
           aria-modal="true"
           aria-labelledby="prereq-dialog-title"
@@ -1020,6 +1214,8 @@ export default function App() {
                 onClick={() => {
                   addCourseToCart(prereqModal.course)
                   setPrereqModal(null)
+                  setEncyclopediaCourse(null)
+                  setMainTab('simulator')
                 }}
                 className="rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-xl"
               >
